@@ -1,0 +1,12 @@
+*
+!*/
+!.gitkeep
+
+!*.py
+!*file
+!*.y*ml
+!*.ipynb
+
+__pycache__/
+*.egg-info/
+.ipynb_checkpoints/
