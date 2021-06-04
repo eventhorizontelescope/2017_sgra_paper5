@@ -18,7 +18,7 @@
 
 from matplotlib import pyplot as plt
 
-def show(imgs, s=None, display=False, **kwargs):
+def show(imgs, s=None, ax=None, **kwargs):
 
     if imgs.ndim != 2:
         if s is None:
@@ -30,14 +30,11 @@ def show(imgs, s=None, display=False, **kwargs):
     u    = imgs.fov.unit
     r, t = imgs.fov.value / 2
 
-    switch = not display and plt.isinteractive()
-    if switch:
-        plt.ioff()
+    if ax is None:
+        fig, ax = plt.subplots(1, 1)
 
-    fig, ax = plt.subplots(1, 1)
     ax.imshow(img.T, origin='lower', extent=[-r, r, -t, t], **kwargs)
+    ax.set_xlabel(f'Relative R.A. [{u:latex}]')
+    ax.set_ylabel(f'Relative Declination [{u:latex}]')
 
-    if switch:
-        plt.ion()
-
-    return fig
+    return ax
