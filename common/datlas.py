@@ -64,7 +64,7 @@ class Image(u.SpecificTypeQuantity):
         m = self.meta
         w = self.angle(m.width  / self.shape[-2], m.dist)
         h = self.angle(m.height / self.shape[-1], m.dist)
-        return (w * h * np.sum(self)).to(u.Jy)
+        return (w * h * np.sum(self, axis=(-2,-1))).to(u.Jy)
 
     @property
     def Lnu(self):
