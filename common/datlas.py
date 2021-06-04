@@ -21,11 +21,15 @@ from astropy import units as u
 
 from . import scale as s
 
+
 class ImageMeta:
 
     @staticmethod
     def du(q, d):
-        return q * (1 if isinstance(q, u.Quantity) else d)
+        try:
+            return q.to(d)
+        except:
+            return q * d
 
     def __init__(self, mass=None, dist=None, freq=None, time=None, width=None, height=None, scale='cgs'):
         if scale == 'AGN':
@@ -33,12 +37,17 @@ class ImageMeta:
         else:
             T, L = u.s,  u.cm
 
-        self.mass   = self.du(mass,   u.M_sun )
-        self.dist   = self.du(dist,   u.parsec)
-        self.freq   = self.du(freq,   u.GHz   )
-        self.time   = self.du(time,   self.mass.to(T, equivalencies=s.GR))
-        self.width  = self.du(width,  self.mass.to(L, equivalencies=s.GR))
-        self.height = self.du(height, self.mass.to(L, equivalencies=s.GR))
+        self.mass   = self.du(mass, u.M_sun )
+        self.dist   = self.du(dist, u.parsec)
+        self.freq   = self.du(freq, u.GHz   )
+
+        tg = u.def_unit('M', self.mass.to(u.s,  s.GR))
+        rg = u.def_unit('M', self.mass.to(u.cm, s.GR))
+
+        self.time   = self.du(time,   self.mass.to(tg, s.GR))
+        self.width  = self.du(width,  self.mass.to(rg, s.GR))
+        self.height = self.du(height, self.mass.to(rg, s.GR))
+
 
 class Image(u.SpecificTypeQuantity):
 
