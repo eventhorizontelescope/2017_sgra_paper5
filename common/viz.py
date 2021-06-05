@@ -43,7 +43,7 @@ def show(imgs, s=None, ax=None, **kwargs):
     return ax
 
 
-def ellipse(ax, a0, b0, major, minor, PA, diameter=False, **kwargs):
+def ellipse(a0, b0, major, minor, PA, ax=None, diameter=False, **kwargs):
     phi = (np.pi / 180) * np.arange(361)
     PA *=  np.pi / 180
 
@@ -57,5 +57,10 @@ def ellipse(ax, a0, b0, major, minor, PA, diameter=False, **kwargs):
     b = h * np.cos(PA) - w * np.sin(PA) + b0
     a = h * np.sin(PA) + w * np.cos(PA) + a0
 
+    if ax is None:
+        fig, ax = plt.subplots(1, 1)
+
     ax.plot(a, b, linewidth=1, **kwargs)
     ax.plot([a[0],a[180]], [b[0], b[180]], '--', linewidth=1, **kwargs)
+
+    return ax
