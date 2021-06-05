@@ -16,7 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with `blackholepy`.  If not, see <http://www.gnu.org/licenses/>.
 
+import numpy as np
 from matplotlib import pyplot as plt
+
 
 def show(imgs, s=None, ax=None, **kwargs):
 
@@ -38,3 +40,21 @@ def show(imgs, s=None, ax=None, **kwargs):
     ax.set_ylabel(f'Relative Declination [{u:latex}]')
 
     return ax
+
+
+def ellipse(ax, a0, b0, major, minor, theta, diameter=False, **kwargs):
+    phi    = np.arange(361) * np.pi / 180
+    theta *=                  np.pi / 180
+
+    if diameter:
+        major /= 2
+        minor /= 2
+
+    x = major * np.cos(phi)
+    y = minor * np.sin(phi)
+
+    a = x * np.cos(theta) - y * np.sin(theta) + a0
+    b = x * np.sin(theta) + y * np.cos(theta) + b0
+
+    ax.plot(a, b, linewidth=1, **kwargs)
+    ax.plot([a[0],a[180]], [b[0], b[180]], '--', linewidth=1, **kwargs)
