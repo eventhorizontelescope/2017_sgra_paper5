@@ -58,5 +58,5 @@ def moments(img, width, height, FWHM=False):
         h0,
         major * f,
         minor * f,
-        atan2(D - dd, wh) * 180 / pi,
+        atan2(wh, D - dd) * 180 / pi,
     )

@@ -17,6 +17,7 @@
 # along with `blackholepy`.  If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
+
 from matplotlib import pyplot as plt
 
 
@@ -42,19 +43,19 @@ def show(imgs, s=None, ax=None, **kwargs):
     return ax
 
 
-def ellipse(ax, a0, b0, major, minor, theta, diameter=False, **kwargs):
-    phi    = np.arange(361) * np.pi / 180
-    theta *=                  np.pi / 180
+def ellipse(ax, a0, b0, major, minor, PA, diameter=False, **kwargs):
+    phi = (np.pi / 180) * np.arange(361)
+    PA *=  np.pi / 180
 
     if diameter:
         major /= 2
         minor /= 2
 
-    x = major * np.cos(phi)
-    y = minor * np.sin(phi)
+    h = major * np.sin(phi)
+    w = minor * np.cos(phi)
 
-    a = x * np.cos(theta) - y * np.sin(theta) + a0
-    b = x * np.sin(theta) + y * np.cos(theta) + b0
+    b = h * np.cos(PA) - w * np.sin(PA) + b0
+    a = h * np.sin(PA) + w * np.cos(PA) + a0
 
     ax.plot(a, b, linewidth=1, **kwargs)
     ax.plot([a[0],a[180]], [b[0], b[180]], '--', linewidth=1, **kwargs)
