@@ -39,6 +39,7 @@ def cache_sum(repo, mag, aspin, window):
 
     Rhigh = np.unique(pf['Rhigh'])
     inc   = np.unique(pf['inc'])
+    dlen  = 0 # for pretty format
 
     for Rh in Rhigh:
         for i in inc:
@@ -49,7 +50,9 @@ def cache_sum(repo, mag, aspin, window):
                 print(f'  "{f}" exists; SKIP')
                 continue
             else:
-                desc = f'* {f}'
+                desc = f'* "{f}"'
+                desc = f'{desc:<{dlen}}' # pretty format
+                dlen = len(desc)
 
             sel = pf(Rhigh=Rh)(inc=i).sort_values('snapshot')
             tab = []
