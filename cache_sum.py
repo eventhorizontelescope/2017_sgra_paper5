@@ -27,7 +27,7 @@ from tqdm    import tqdm
 
 from common import hallmark as hm
 from common import io
-from common import moments as mm
+from common import analyses as mm
 
 def cache_sum(repo, mag, aspin, window):
 
@@ -54,14 +54,18 @@ def cache_sum(repo, mag, aspin, window):
                     Ftot  = f['Ftot'][()]
                     img   = io.load_img(f)
 
+                moments = mm.moments(img.value, *img.fov.value, FWHM=True)
                 time    = img.meta.time.value
                 time_hr = img.meta.time.to(u.hr).value
                 tab.append([
                     time, time_hr,
-                    Ladv, Mdot, nuLnu, Ftot, np.min(img.value), np.max(img.value)])
+                    Ladv, Mdot, nuLnu, Ftot, np.min(img.value), np.max(img.value),
+                    *moments])
 
             tab = pd.DataFrame(tab, columns=[
-                'time', 'time_hr', 'Mdot', 'Ladv', 'nuLnu', 'Ftot', 'Fmin', 'Fmax'])
+                'time', 'time_hr',
+                'Mdot', 'Ladv', 'nuLnu', 'Ftot', 'Fmin', 'Fmax',
+                'Fsum', 'ra', 'dec', 'major_FWHM', 'minor_FWHM', 'PA'])
 
             d = f'cache/{repo}/{mag}a{aspin}'
             Path(d).mkdir(parents=True, exist_ok=True)
