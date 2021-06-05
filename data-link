@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+GRP='Illinois'
+SRC='/bd4/eht/Illinois_SgrA_v3'
+
+for src in "${SRC}"/*/*_w?; do
+	pre="${src#$SRC/}"
+	dst="data/${GRP}_${pre}"
+
+	case "$(dirname $pre)" in
+	SEDs) count=57600;;
+	*)    count=36000;;
+	esac
+
+	if [ "$(ls -U1 $src | wc -l)" -ne "$count" ]; then
+		echo "  Invalid source $src; SKIP"
+	elif [ -e "$dst" ]; then
+		echo "  Target $dst exists; SKIP"
+	else
+		echo "* Link '$src' into '$dst'"
+		mkdir -p $(dirname $dst)
+		ln -s "$src" "$dst"
+	fi
+done
