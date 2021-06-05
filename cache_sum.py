@@ -31,28 +31,36 @@ from common import analyses as mm
 
 def cache_sum(repo, mag, aspin, window):
 
-    print(f'data/{repo}/{mag}a{aspin}_w{window}/'+
-                       'img_s{snapshot:d}_Rh{Rhigh:g}_i{inc:g}.h5')
-
     pf = hm.ParaFrame(f'data/{repo}/{mag}a{aspin}_w{window}/'+
                        'img_s{snapshot:d}_Rh{Rhigh:g}_i{inc:g}.h5')
     if len(pf) == 0:
         print('No input file found; try passing in different options')
         exit(1)
 
-    for Rh in np.unique(pf['Rhigh']):
-        for i in np.unique(pf['inc']):
-            sel  = pf(Rhigh=Rh)(inc=i).sort_values('snapshot')
-            desc = f'* {repo} {mag} {aspin} {window}: {Rh:g} {i:g}'
+    Rhigh = np.unique(pf['Rhigh'])
+    inc   = np.unique(pf['inc'])
 
+    for Rh in Rhigh:
+        for i in inc:
+            d = Path(f'cache/{repo}/{mag}a{aspin}')
+            f = d.joinpath(f'sum_Rh{Rh:g}_i{i:g}_w{window}.tsv')
+
+            if f.is_file():
+                print(f'  "{f}" exists; SKIP')
+                continue
+            else:
+                desc = f'* {f}'
+
+            sel = pf(Rhigh=Rh)(inc=i).sort_values('snapshot')
             tab = []
+
             for p in tqdm(sel.path, desc=desc):
-                with h5py.File(p, "r") as f:
-                    Mdot  = f['Mdot'][()]
-                    Ladv  = f['Ladv'][()]
-                    nuLnu = f['nuLnu'][()]
-                    Ftot  = f['Ftot'][()]
-                    img   = io.load_img(f)
+                with h5py.File(p, "r") as h:
+                    Mdot  = h['Mdot'][()]
+                    Ladv  = h['Ladv'][()]
+                    nuLnu = h['nuLnu'][()]
+                    Ftot  = h['Ftot'][()]
+                    img   = io.load_img(h)
 
                 moments = mm.moments(img.value, *img.fov.value, FWHM=True)
                 time    = img.meta.time.value
@@ -67,11 +75,8 @@ def cache_sum(repo, mag, aspin, window):
                 'Mdot', 'Ladv', 'nuLnu', 'Ftot', 'Fmin', 'Fmax',
                 'Fsum', 'ra', 'dec', 'major_FWHM', 'minor_FWHM', 'PA'])
 
-            d = f'cache/{repo}/{mag}a{aspin}'
-            Path(d).mkdir(parents=True, exist_ok=True)
-
-            f = f'sum_Rh{Rh:g}_i{i:g}_w{window}.tsv'
-            tab.to_csv(Path(d).joinpath(f), sep='\t', index=False)
+            d.mkdir(parents=True, exist_ok=True)
+            tab.to_csv(f, sep='\t', index=False)
 
 #==============================================================================
 # Make cache_sum() callable as a script
@@ -79,12 +84,19 @@ def cache_sum(repo, mag, aspin, window):
 import click
 
 @click.command()
-@click.option('-r','--repo',  default='Illinois_230GHz',help='Data repository')
-@click.option('-m','--mag',   default='M',              help='Magnetization')
-@click.option('-a','--aspin', default='0',              help='Black hole spin')
-@click.option('-w','--window',default='5',              help='Time window')
-def cmd(repo, mag, aspin, window):
-    cache_sum(repo, mag, aspin, window)
+@click.option('-r','--repo',   default=None, help='Data repository')
+@click.option('-m','--mag',    default=None, help='Magnetization')
+@click.option('-a','--aspin',  default=None, help='Black hole spin')
+@click.option('-w','--window', default=None, help='Time window')
+def cmd(**kwargs):
+    pf = hm.ParaFrame('data/{repo}/{mag}a{aspin}_w{window}')
+    for k, v in kwargs.items():
+        if v is not None:
+            pf = pf(**{k:v})
+
+    for row in pf.itertuples(index=False):
+        print(f'Source repo "{row[0]}":')
+        cache_sum(*row[1:])
 
 if __name__ == '__main__':
     cmd()
