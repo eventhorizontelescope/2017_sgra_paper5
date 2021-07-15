@@ -1,8 +1,8 @@
-astropy
-click
-h5py
-matplotlib
-numpy
-pandas
-parse
-tqdm
+astropy>=4.1
+click>=7.1
+h5py>=3.1
+matplotlib>=3.2
+numpy>=1.19
+pandas>=1.1
+parse>=1.16
+tqdm>=4.46
