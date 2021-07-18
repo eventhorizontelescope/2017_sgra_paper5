@@ -29,7 +29,7 @@ from common import hallmark as hm
 from common import io
 from common import analyses as mm
 
-def cache_sum(repo, mag, aspin, window):
+def cache_summ(repo, mag, aspin, window):
 
     pf = hm.ParaFrame(f'data/{repo}/{mag}a{aspin}_w{window}/'+
                        'img_s{snapshot:d}_Rh{Rhigh:g}_i{inc:g}.h5')
@@ -44,7 +44,7 @@ def cache_sum(repo, mag, aspin, window):
     for Rh in Rhigh:
         for i in inc:
             d = Path(f'cache/{repo}/{mag}a{aspin}')
-            f = d.joinpath(f'sum_Rh{Rh:g}_i{i:g}_w{window}.tsv')
+            f = d.joinpath(f'summ_Rh{Rh:g}_i{i:g}_w{window}.tsv')
 
             if f.is_file():
                 print(f'  "{f}" exists; SKIP')
@@ -82,7 +82,7 @@ def cache_sum(repo, mag, aspin, window):
             tab.to_csv(f, sep='\t', index=False)
 
 #==============================================================================
-# Make cache_sum() callable as a script
+# Make cache_summ() callable as a script
 
 import click
 
@@ -99,7 +99,7 @@ def cmd(**kwargs):
 
     for row in pf.itertuples(index=False):
         print(f'Source repo "{row[0]}":')
-        cache_sum(*row[1:])
+        cache_summ(*row[1:])
 
 if __name__ == '__main__':
     cmd()
