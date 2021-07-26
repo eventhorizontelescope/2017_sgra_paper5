@@ -31,7 +31,9 @@ class ImageMeta:
         except:
             return q * d
 
-    def __init__(self, mass=None, dist=None, freq=None, time=None, width=None, height=None, scale='cgs'):
+    def __init__(self,
+                 mass=None, dist=None, freq=None,
+                 time=None, width=None, height=None, scale='cgs'):
         if scale == 'AGN':
             T, L = u.hr, u.au
         else:
@@ -57,7 +59,9 @@ class Image(u.SpecificTypeQuantity):
 
     _equivalent_unit = (u.erg / u.s) / (u.cm * u.cm * u.sr * u.Hz)
 
-    def __new__(cls, img, *args, meta=None, unit=None, dtype=None, copy=True, **kwargs):
+    def __new__(cls,
+                img, *args,
+                meta=None, unit=None, dtype=None, copy=True, **kwargs):
         if unit is None:
             unit = cls._equivalent_unit
 
