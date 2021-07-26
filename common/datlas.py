@@ -43,18 +43,19 @@ class ImageMeta:
         self.dist   = self.du(dist, u.parsec)
         self.freq   = self.du(freq, u.GHz   )
 
-        u.set_enabled_equivalencies(s.GR)
-        tg = u.def_unit('M', self.mass.to(u.s))
-        rg = u.def_unit('M', self.mass.to(u.cm))
+        self.GR = s.GR
+        with u.set_enabled_equivalencies(self.GR):
+            self.tg = u.def_unit('M', self.mass.to(u.s))
+            self.rg = u.def_unit('M', self.mass.to(u.cm))
 
-        self.time   = self.du(time,   self.mass.to(tg))
-        self.width  = self.du(width,  self.mass.to(rg))
-        self.height = self.du(height, self.mass.to(rg))
+        self.time   = self.du(time,   self.tg)
+        self.width  = self.du(width,  self.rg)
+        self.height = self.du(height, self.rg)
 
-        u.set_enabled_equivalencies([ # geometry equivalencies
-            (rg, u.radian, lambda L: L / self.dist.to(rg),
-                           lambda a: a * self.dist.to(rg)),
-        ])
+        self.geom = [ # geometry equivalencies
+            (self.rg, u.radian, lambda L: L / self.dist.to(self.rg),
+                                lambda a: a * self.dist.to(self.rg)),
+        ]
 
 
 class Image(u.SpecificTypeQuantity):
