@@ -16,9 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with `blackholepy`.  If not, see <http://www.gnu.org/licenses/>.
 
-from copy import copy
-
-import numpy as np
 import h5py
 from astropy import units
 
@@ -59,8 +56,8 @@ def load_mov(fs, **kwargs):
         fs = [fs]
 
     times = []
-    imgs  = [] # collect arrays in list and then cast to np.array()
-               # all at once is faster than concatenate
+    imgs  = [] # collect arrays in list and then cast to np.array() in
+               # d.Image() all at once is faster than concatenate
     for f in fs:
         img = load_img(f, **kwargs)
         times.append(img.meta.time)
