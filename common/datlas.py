@@ -50,6 +50,11 @@ class ImageMeta:
         self.width  = self.du(width,  self.mass.to(rg, s.GR))
         self.height = self.du(height, self.mass.to(rg, s.GR))
 
+        u.set_enabled_equivalencies([ # geometry equivalencies
+            (rg, u.radian, lambda L: L / self.dist.to(rg),
+                           lambda a: a * self.dist.to(rg)),
+        ])
+
 
 class Image(u.SpecificTypeQuantity):
 
