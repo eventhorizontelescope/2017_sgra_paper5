@@ -12,7 +12,7 @@ for src in "${SRC}"/*/*_w?; do
 	*)    count=36000;;
 	esac
 
-	if [ "$(find $src -type f -o -type l -name '*.h5' | grep -v BADINPUT | wc -l)" -ne "$count" ]; then
+	if [ "$(find $src \( -type f -o -type l \) -name '*.h5' | grep -v BADINPUT | wc -l)" -ne "$count" ]; then
 		echo "  Invalid source $src; SKIP"
 	elif [ -e "$dst" ]; then
 		echo "  Target $dst exists; SKIP"
