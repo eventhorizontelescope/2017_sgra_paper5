@@ -80,7 +80,7 @@ def mov_simple(repo, mag, aspin, window):
             cmd = ['ffmpeg',
                    '-start_number', f'{snapshot[0]}',
                    '-i', f'img_Rh{Rh:g}_i{i:g}_w{window}.%06d.png',
-                   '-qmax', '2', f'mov_Rh{Rh:g}_i{i:g}_w{window}.mov']
+                   '-qmax', '2', f'mov_Rh{Rh:g}_i{i:g}_w{window}.mpg']
             print(cmd)
             run(cmd, cwd=d)
                 
