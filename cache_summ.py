@@ -93,6 +93,8 @@ import click
 @click.option('-w','--window', default=None, help='Time window')
 def cmd(**kwargs):
     pf = hm.ParaFrame('data/{repo}/{mag}a{aspin}_w{window}')
+    pf = pf[~pf.repo.str.endswith('SEDs')]
+    
     for k, v in kwargs.items():
         if v is not None:
             pf = pf(**{k:v})
