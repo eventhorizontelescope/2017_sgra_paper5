@@ -1,4 +1,4 @@
-# EHT Sgr A* Theory Paper Analysis Tools
+# EHT Sgr A* Theory Paper Analysis Toolkit
 
 This repository contains tools and Jupyter notebooks for data analysis
 and visualization for the EHT Sgr A* Theory Paper.
@@ -23,7 +23,38 @@ Because of this, instead of using custom libraries such as
 and
 [`mockservation`](https://github.com/focisrc/mockservation),
 we put all the dependent functions in the "common/" directory.
-This makes this repository easy to use and self-contain.
+This makes this repository easy to use and self-contained.
+
+When we are about to finish the Sgr A* papers, it is possible that we
+will push the code upstream back to the individual packages, and turn
+this into a meta-package.
+
+
+## Design
+
+We design this toolkit so it allows multiple people to work together.
+To make it a smooth experience, we define three data stage.
+
+* `models/`: the "input models" of this toolkit include images at
+  different frequencies or simply SEDs.  These are usually outputs of
+  high performance C or Fortran codes that require significant
+  computing resource to run.  The number of files is of order of
+  million and total size may reach 10s of TB.  The intention is that
+  the people who generate the models are responsible to their own
+  models, who may copy or link the input models in the `models/`
+  directory in their own clone of this repository.
+
+* `cache/`: this toolkit then preprocesses the input models to summary
+  tables and/or compressed movies that are directly relevant to the
+  science.  Examples include total flux, image size, spectral filtered
+  movies.  The number and total size of these cache files is usually a
+  few orders of mangitude smaller than the files in `models/`.
+  Because of the more managable size, the intension is that people can
+  share/rsync the full copy of these cache files to their own laptop
+  to perform analysis.
+
+* `output/`: stores outputs including LaTeX tables, plots, and movies,
+  that are generated from files in `cache/` and possibility `models/`.
 
 
 ## Other Tools
