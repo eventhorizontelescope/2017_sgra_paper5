@@ -18,11 +18,12 @@ We only require standard libraries:
 * astropy
 * click (only used in the top level driver scripts)
 * h5py
-* jupyterlab
-* matplotlib (only used to open the notebooks)
+* jupyterlab (only used to open the notebooks)
+* matplotlib
 * numpy
 * pandas
 * parse
+* ruamel.yaml (only used in the top level driver scripts)
 * tqdm (only used in the top level driver scripts)
 
 Because of this, instead of using custom libraries such as
