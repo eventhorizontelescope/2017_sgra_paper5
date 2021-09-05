@@ -30,15 +30,26 @@ from common import hallmark as hm
 from common import io
 from common import analyses as mm
 
-def cache_summ(src_fmt, dst_fmt, params=['Rhigh', 'inc'], sort=['snapshot']):
+def cache_summ(src_fmt, dst_fmt, params=None, sort=['snapshot']):
 
+    dlen = 0 # for pretty format in `tqdm`
+
+    # Find input models using hallmark `ParaFrame`
     pf = hm.ParaFrame(src_fmt)
     if len(pf) == 0:
         print('No input found; please try different options')
         exit(1)
 
-    dlen   = 0 # for pretty format in `tqdm`
+    # Automatically determine parameters if needed, turn `params` into
+    # a dict of parameters and their unique values
+    if params is None:
+        params = list(pf.keys())
+        params.remove('path')
+        for p in sort:
+            params.remove(p)
     params = {p:np.unique(pf[p]) for p in params}
+
+    # Main loop for generating multiple summary tables
     for values in product(*params.values()):
         criteria = {p:v for p, v in zip(params.keys(), values)}
 
