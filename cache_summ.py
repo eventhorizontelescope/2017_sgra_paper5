@@ -31,12 +31,12 @@ from common import hallmark as hm
 from common import io
 from common import analyses as mm
 
-def cache_summ(src_fmt, dst_fmt, params=None, order=['snapshot']):
+def cache_summ(src_fmt, dst_fmt, params=None, order=['snapshot'], **kwargs):
 
     dlen = 0 # for pretty format in `tqdm`
 
     # Find input models using hallmark `ParaFrame`
-    pf = hm.ParaFrame(src_fmt)
+    pf = hm.ParaFrame(src_fmt, **kwargs)
     if len(pf) == 0:
         print('No input found; please try different options')
         exit(1)
@@ -113,11 +113,21 @@ def cache_summ(src_fmt, dst_fmt, params=None, order=['snapshot']):
 import click
 
 @click.command()
-@click.argument('confs', nargs=-1)
-def cmd(confs):
+@click.argument('args', nargs=-1)
+def cmd(args):
+
+    confs  = []
+    params = {}
+    for arg in args:
+        if '=' in arg:
+            p = arg.split('=')
+            params[p[0]] = p[1]
+        else:
+            confs.append(arg)
+
     for c in confs:
         with open(c) as f:
-            cache_summ(**safe_load(f))
+            cache_summ(**safe_load(f), **params)
 
 if __name__ == '__main__':
     cmd()
