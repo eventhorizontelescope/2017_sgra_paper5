@@ -54,6 +54,8 @@ def ellipse(a0, b0, major, minor, PA, ax=None, diameter=False, **kwargs):
     h = major * np.sin(phi)
     w = minor * np.cos(phi)
 
+    # position angle is measured from vertical axis (North), toward
+    # left (East in sky).
     b = h * np.cos(PA) - w * np.sin(PA) + b0
     a = h * np.sin(PA) + w * np.cos(PA) + a0
 
@@ -61,6 +63,6 @@ def ellipse(a0, b0, major, minor, PA, ax=None, diameter=False, **kwargs):
         fig, ax = plt.subplots(1, 1)
 
     ax.plot(a, b, linewidth=1, **kwargs)
-    ax.plot([a[0],a[180]], [b[0], b[180]], '--', linewidth=1, **kwargs)
+    ax.plot([a[90],a[270]], [b[90],b[270]], '--', linewidth=1, **kwargs)
 
     return ax
