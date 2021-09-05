@@ -2,6 +2,12 @@
 
 This repository contains tools and Jupyter notebooks for data analysis
 and visualization for the EHT Sgr A* Theory Paper.
+All user scripts and notebooks are in the top directory.
+To use the scripts and notebooks in this package, simply run
+
+    pip3 install -r requirements.txt
+
+to obtain the necessary packages.
 
 
 ## Dependency
@@ -10,13 +16,14 @@ This repository tries to keep its dependency minimal.  We only require
 standard libraries:
 
 * astropy
-* click (only used in the top level scripts)
+* click (only used in the top level driver scripts)
 * h5py
-* matplotlib
+* jupyterlab
+* matplotlib (only used to open the notebooks)
 * numpy
 * pandas
 * parse
-* tqdm (only used in the top level scripts)
+* tqdm (only used in the top level driver scripts)
 
 Because of this, instead of using custom libraries such as
 [`hallmark`](https://github.com/l6a/hallmark)
@@ -27,7 +34,7 @@ This makes this repository easy to use and self-contained.
 
 When we are about to finish the Sgr A* papers, it is possible that we
 will push the code upstream back to the individual packages, and turn
-this into a meta-package.
+this into a meta-package that help us manage all upstream packages.
 
 
 ## Design
