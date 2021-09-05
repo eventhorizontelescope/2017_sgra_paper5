@@ -1,0 +1,6 @@
+src_fmt:
+  model/Ressler/beta{beta}/image_dump{snapshot:d}_inc179.0_Munit8.925e-01_Rhigh22.0_freq{freq:e}.h5
+dst_fmt:
+  cache/Ressler/summ_beta{beta}_{freq:.1e}.tsv
+order:
+  - snapshot
