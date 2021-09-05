@@ -28,7 +28,7 @@ from tqdm    import tqdm
 from yaml    import safe_load
 
 from common import hallmark as hm
-from common import io
+from common import io_ipole as io
 from common import analyses as mm
 
 def cache_summ(src_fmt, dst_fmt, params=None, order=['snapshot'], **kwargs):

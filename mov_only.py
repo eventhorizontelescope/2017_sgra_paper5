@@ -32,7 +32,7 @@ from astropy import units as u
 from tqdm    import tqdm
 
 from common import hallmark as hm
-from common import io
+from common import io_ipole as io
 from common import analyses as mm
 from common import viz
 
@@ -83,7 +83,7 @@ def mov_simple(repo, mag, aspin, window):
                    '-qmax', '2', f'mov_Rh{Rh:g}_i{i:g}_w{window}.mpg']
             print(cmd)
             run(cmd, cwd=d)
-                
+
 #==============================================================================
 # Make mov_simple() callable as a script
 
