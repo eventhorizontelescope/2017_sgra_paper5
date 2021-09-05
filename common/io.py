@@ -19,8 +19,8 @@
 import h5py
 from astropy import units
 
-from . import scale  as s
-from . import datlas as d
+from . import scale as s
+from . import dalt  as d
 
 def load_hdf5(f, pol=False, **kwargs):
 
