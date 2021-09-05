@@ -80,6 +80,7 @@ def cache_summ(src_fmt, dst_fmt, params=None, order=['snapshot']):
         # Actually creating the table
         tab = []
         for p in tqdm(sel.path, desc=desc):
+            # Assume ipole output; need to rewrite this for other formats
             with h5py.File(p, "r") as h:
                 Mdot  = h['Mdot'][()]
                 Ladv  = h['Ladv'][()]
