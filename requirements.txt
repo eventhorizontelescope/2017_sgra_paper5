@@ -6,4 +6,5 @@ matplotlib>=3.2
 numpy>=1.19
 pandas>=1.1
 parse>=1.16
+ruamel.yaml>=0.17.2
 tqdm>=4.46

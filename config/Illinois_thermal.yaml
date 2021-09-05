@@ -1,0 +1,6 @@
+src_fmt:
+  model/Illinois_{freq}_Sa{aspin}_w{win:d}/img_s{snapshot:d}_Rh{Rhigh:d}_i{inc:d}.h5
+dst_fmt:
+  cache/Illinois_thermal_w{win:d}/Sa{aspin}_{freq}/summ_Rh{Rhigh:d}_i{inc:d}.tsv
+order:
+  - snapshot

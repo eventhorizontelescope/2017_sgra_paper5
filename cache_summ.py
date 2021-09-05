@@ -25,12 +25,13 @@ import h5py
 
 from astropy import units as u
 from tqdm    import tqdm
+from yaml    import safe_load
 
 from common import hallmark as hm
 from common import io
 from common import analyses as mm
 
-def cache_summ(src_fmt, dst_fmt, params=None, sort=['snapshot']):
+def cache_summ(src_fmt, dst_fmt, params=None, order=['snapshot']):
 
     dlen = 0 # for pretty format in `tqdm`
 
@@ -45,8 +46,8 @@ def cache_summ(src_fmt, dst_fmt, params=None, sort=['snapshot']):
     if params is None:
         params = list(pf.keys())
         params.remove('path')
-        for p in sort:
-            params.remove(p)
+        for k in order:
+            params.remove(k)
     params = {p:np.unique(pf[p]) for p in params}
 
     # Main loop for generating multiple summary tables
@@ -73,7 +74,7 @@ def cache_summ(src_fmt, dst_fmt, params=None, sort=['snapshot']):
         dlen = len(desc)
 
         # Make sure that the summary table is sorted correctly
-        for k in sort:
+        for k in order:
             sel = sel.sort_values(k)
 
         # Actually creating the table
@@ -111,21 +112,11 @@ def cache_summ(src_fmt, dst_fmt, params=None, sort=['snapshot']):
 import click
 
 @click.command()
-@click.option('-r','--repo',   default=None, help='Data repository')
-@click.option('-m','--mag',    default=None, help='Magnetization')
-@click.option('-a','--aspin',  default=None, help='Black hole spin')
-@click.option('-w','--window', default=None, help='Time window')
-def cmd(**kwargs):
-    pf = hm.ParaFrame('data/{repo}/{mag}a{aspin}_w{window}')
-    pf = pf[~pf.repo.str.endswith('SEDs')]
-
-    for k, v in kwargs.items():
-        if v is not None:
-            pf = pf(**{k:v})
-
-    for row in pf.itertuples(index=False):
-        print(f'Source repo "{row[0]}":')
-        cache_summ(*row[1:])
+@click.argument('confs', nargs=-1)
+def cmd(confs):
+    for c in confs:
+        with open(c) as f:
+            cache_summ(**safe_load(f))
 
 if __name__ == '__main__':
     cmd()
