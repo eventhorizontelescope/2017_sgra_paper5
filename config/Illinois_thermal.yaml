@@ -2,5 +2,7 @@ src_fmt:
   model/Illinois_thermal/{freq}/{mag}a{aspin}_w{win:d}/img_s{snapshot:d}_Rh{Rhigh:d}_i{inc:d}.h5
 dst_fmt:
   cache/Illinois_thermal_w{win:d}/{mag}a{aspin}_i{inc:d}/summ_Rh{Rhigh:d}_{freq}.tsv
+img_fmt:
+  ipole
 order:
   - snapshot

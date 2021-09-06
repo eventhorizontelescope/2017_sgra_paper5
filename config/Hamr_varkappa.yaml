@@ -2,5 +2,7 @@ src_fmt:
   model/Hamr_varkappa/Hamr_Variable_Kappa_Model_{freq}/{mag}_a{aspin}/Rhigh_{Rhigh:d}_Inclination_{inc:d}/{mag}_a{aspin}_{snapshot:d}.h5
 dst_fmt:
   cache/Hamr_varkappa/{mag}_a{aspin}_i{inc:d}/summ_Rh{Rhigh:d}_{freq}.tsv
+img_fmt:
+  ipole
 order:
   - snapshot
