@@ -51,6 +51,15 @@ def load_img(f, **kwargs):
     with h5py.File(f, "r") as g:
         return load_hdf5(g, **kwargs)
 
+def load_summ(f):
+    with h5py.File(f, "r") as h:
+        Mdot  = h['Mdot'][()]
+        Ladv  = h['Ladv'][()]
+        nuLnu = h['nuLnu'][()]
+        Ftot  = h['Ftot'][()]
+        img   = io.load_img(h)
+    return Mdot, Ladv, nuLnu, Ftot, img
+
 def load_mov(fs, **kwargs):
     if isinstance(fs, str):
         fs = [fs]

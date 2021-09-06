@@ -80,13 +80,7 @@ def cache_summ(src_fmt, dst_fmt, params=None, order=['snapshot'], **kwargs):
         # Actually creating the table
         tab = []
         for p in tqdm(sel.path, desc=desc):
-            # Assume ipole output; need to rewrite this for other formats
-            with h5py.File(p, "r") as h:
-                Mdot  = h['Mdot'][()]
-                Ladv  = h['Ladv'][()]
-                nuLnu = h['nuLnu'][()]
-                Ftot  = h['Ftot'][()]
-                img   = io.load_img(h)
+            Mdot, Ladv, nuLnu, Ftot, img = io.load_summ(p)
 
             moments = mm.moments(img.value, *img.fov.value, FWHM=True)
             time    = img.meta.time.value
