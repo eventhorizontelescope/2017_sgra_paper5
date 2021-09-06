@@ -57,7 +57,7 @@ def load_summ(f):
         Ladv  = h['Ladv'][()]
         nuLnu = h['nuLnu'][()]
         Ftot  = h['Ftot'][()]
-        img   = io.load_img(h)
+        img   = load_img(h)
     return Mdot, Ladv, nuLnu, Ftot, img
 
 def load_mov(fs, **kwargs):
