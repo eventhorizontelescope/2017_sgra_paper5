@@ -47,7 +47,7 @@ To make it a smooth experience, we define three data stage.
   different frequencies or full SEDs.
   These are usually outputs of high performance C or Fortran codes such as
   [`ipole`](https://github.com/AFD-Illinois/ipole) and
-  [`igrmonty`](https://github.com/AFD-Illinois/ipole)
+  [`igrmonty`](https://github.com/afd-illinois/igrmonty)
   that require significant computing resource to run.
   The number of files is of order of million and total size may reach
   10s of TB.
