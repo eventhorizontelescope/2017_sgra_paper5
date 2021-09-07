@@ -1,7 +1,7 @@
 src_fmt:
-  model/critical_beta/{freq:e}/image_{mag}a{aspin}_{snapshot:d}_{inc:d}_0_{freq_long:e}_4.140e+06_{rho0:g}_8.127e+03_{f:g}_{beta:g}_400_400.h5
+  model/critical_beta/{freq}/image_{mag}a{aspin}_{snapshot:d}_{inc:d}_0_{freq_long:e}_4.140e+06_{rho0:g}_8.127e+03_{f:g}_{beta:g}_400_400.h5
 dst_fmt:
-  cache/critical_beta/{mag}a{aspin}_i{inc:d}/summ_f{f:g}_b{beta:g}_{freq:.1e}.tsv
+  cache/critical_beta/{mag}a{aspin}_i{inc:d}/summ_f{f:g}_b{beta:g}_{freq}.tsv
 img_fmt:
   ipole
 params:
