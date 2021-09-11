@@ -1,0 +1,15 @@
+src_fmt:
+  model/KORAL_long/A_a{spin}_1e-5/Rlow{Rlow:g}_Rhigh{Rhigh:g}/inc{inc:g}/freq{freq:g}/dump{snapshot:d}_time{timeInM:g}/A_a{spin}_1e-5_Rlow{Rlow:g}_Rhigh{Rhigh:g}_inc{inc:g}_freq{freq:g}_dump{snapshot:d}_time{timeInM:g}_res400.h5
+dst_fmt:
+  cache/KORAL_long/M_a{spin}_i{inc:g}/summ_Rh{Rhigh:g}_{freq:g}.tsv
+img_fmt:
+  ipole
+params:
+  - spin
+# - Rlow
+  - Rhigh
+  - inc
+  - freq
+# - timeInM
+order:
+  - snapshot
