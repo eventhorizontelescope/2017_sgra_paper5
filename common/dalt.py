@@ -57,6 +57,16 @@ class ImageMeta:
                                 lambda a: a * self.dist.to(self.rg)),
         ]
 
+    def dict(self):
+        return {
+            'mass':   self.mass  .to(u.M_sun ).value,
+            'dist':   self.dist  .to(u.parsec).value,
+            'freq':   self.freq  .to(u.GHz   ).value,
+            'time':   self.time  .to(self.tg ).value,
+            'width':  self.width .to(self.rg ).value,
+            'height': self.height.to(self.rg ).value,
+        }
+
 
 class Image(u.SpecificTypeQuantity):
 
