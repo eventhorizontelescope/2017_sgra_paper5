@@ -20,16 +20,13 @@ from pathlib   import Path
 from itertools import product
 from importlib import import_module
 
-import numpy  as np
-import pandas as pd
+import numpy as np
 import h5py
 
-from astropy import units as u
-from tqdm    import tqdm
-from yaml    import safe_load
+from tqdm import tqdm
+from yaml import safe_load
 
 from common import hallmark as hm
-from common import analyses as mm
 
 def cache_mov(src_fmt, dst_fmt, img_fmt='ipole',
               params=None, order=['snapshot'], **kwargs):
