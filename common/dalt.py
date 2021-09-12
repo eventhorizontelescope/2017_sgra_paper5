@@ -33,11 +33,7 @@ class ImageMeta:
 
     def __init__(self,
                  mass=None, dist=None, freq=None,
-                 time=None, width=None, height=None, scale='cgs'):
-        if scale == 'AGN':
-            T, L = u.hr, u.au
-        else:
-            T, L = u.s,  u.cm
+                 time=None, width=None, height=None):
 
         self.mass   = self.du(mass, u.M_sun )
         self.dist   = self.du(dist, u.parsec)
