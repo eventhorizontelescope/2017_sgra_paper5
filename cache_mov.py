@@ -78,11 +78,15 @@ def cache_mov(src_fmt, dst_fmt, img_fmt='ipole',
             sel = sel.sort_values(k)
 
         # Actually load the images
-        mov = load_mov(tqdm(sel.path, desc=desc))
+        mov = io.load_mov(tqdm(sel.path, desc=desc))
 
         # Only touch file system if everything works
         dst.parent.mkdir(parents=True, exist_ok=True)
-        # mov.to_csv(dst, sep='\t', index=False)
+        with h5py.File(dst, 'w') as f:
+            f['data'] = mov
+            for k, v in mov.meta.dict().items():
+                f['meta/'+k] = v
+
 
 #==============================================================================
 # Make cache_mov() callable as a script
