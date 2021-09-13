@@ -22,31 +22,31 @@ from astropy import units as u
 from . import scale as s
 
 
-class ImageMeta:
+def du(q, d):
+    try:
+        return q.to(d)
+    except:
+        return q * d
 
-    @staticmethod
-    def du(q, d):
-        try:
-            return q.to(d)
-        except:
-            return q * d
+
+class ImageMeta:
 
     def __init__(self,
                  mass=None, dist=None, freq=None,
                  time=None, width=None, height=None):
 
-        self.mass   = self.du(mass, u.M_sun )
-        self.dist   = self.du(dist, u.parsec)
-        self.freq   = self.du(freq, u.GHz   )
+        self.mass   = du(mass, u.M_sun )
+        self.dist   = du(dist, u.parsec)
+        self.freq   = du(freq, u.GHz   )
 
         self.GR = s.GR
         with u.set_enabled_equivalencies(self.GR):
             self.tg = u.def_unit('M', self.mass.to(u.s))
             self.rg = u.def_unit('M', self.mass.to(u.cm))
 
-        self.time   = self.du(time,   self.tg)
-        self.width  = self.du(width,  self.rg)
-        self.height = self.du(height, self.rg)
+        self.time   = du(time,   self.tg)
+        self.width  = du(width,  self.rg)
+        self.height = du(height, self.rg)
 
         self.geom = [ # geometry equivalencies
             (self.rg, u.radian, lambda L: L / self.dist.to(self.rg),
@@ -106,20 +106,23 @@ class Image(u.SpecificTypeQuantity):
         m = self.meta
         return self.angle([-m.width, m.height], m.dist).to(u.uas)
 
+    @property
+    def extent(self):
+        return np.tensordot(self.fov.value, [-0.5, 0.5], 0).flatten()
+
+    @property
+    def extent_labels(self):
+        u = self.fov.unit
+        return [f'Relative R.A. [{u:latex}]',
+                f'Relative Declination [{u:latex}]']
+
 
 class VisibilityMeta:
 
-    @staticmethod
-    def du(q, d):
-        try:
-            return q.to(d)
-        except:
-            return q * d
-
     def __init__(self, U=None, V=None, freq=None, time=None):
 
-        self.freq = self.du(freq, u.GHz)
-        self.time = self.du(time, u.hr)
+        self.freq = du(freq, u.GHz)
+        self.time = du(time, u.hr)
         self.U    = U
         self.V    = V
 
