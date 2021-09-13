@@ -20,6 +20,9 @@ from math    import isclose
 from numbers import Number
 
 import numpy as np
+from astropy import units as u
+
+from . import dalt
 
 
 def almostreal(c, tolerance=1e-7):
@@ -145,3 +148,11 @@ def downifft(spec, U, V, N=None, show=False):
 
     imgs = np.fft.fftshift(np.fft.irfft2(np.fft.fftshift(trun, axes=-2), norm=norm), axes=(-2,-1))
     return imgs, width, height
+
+
+def mockserve(imgs, N=None):
+    px = imgs.fov / imgs.shape[-2:]
+    pa = abs(px[0] * px[1])
+    m  = imgs.meta
+    return dalt.Visibility(*upfft(imgs * pa, *imgs.fov.to(u.rad).value, N=N),
+                           freq=m.freq, time=m.time)
