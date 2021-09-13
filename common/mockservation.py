@@ -22,6 +22,27 @@ from numbers import Number
 import numpy as np
 
 
+def almostreal(c, tolerance=1e-7):
+    return np.all(abs(c.imag) * tolerance <= abs(c.real))
+
+def evendim(spec):
+    nyquist = spec[...,-1]
+    N       = nyquist.shape[-1]
+    H       = N // 2
+
+    ck0i = almostreal(nyquist[...,H])
+    if N % 2 == 0:
+        ck0H = almostreal(nyquist[...,    0])
+        ckiH = np.allclose(nyquist[...,  1:H],
+                   np.flip(nyquist[...,H+1: ].conj(), axis=-1))
+    else:
+        ck0H = True # N is odd; nothing to check
+        ckiH = np.allclose(nyquist[...,   :H],
+                   np.flip(nyquist[...,H+1: ].conj(), axis=-1))
+
+    return ck0i and ck0H and ckiH
+
+
 def upfft(imgs, width, height, N=None):
 
     if not isclose(width, height):
