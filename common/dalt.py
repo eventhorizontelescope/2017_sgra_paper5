@@ -105,3 +105,60 @@ class Image(u.SpecificTypeQuantity):
     def fov(self):
         m = self.meta
         return self.angle([-m.width, m.height], m.dist).to(u.uas)
+
+
+class VisibilityMeta:
+
+    @staticmethod
+    def du(q, d):
+        try:
+            return q.to(d)
+        except:
+            return q * d
+
+    def __init__(self, U=None, V=None, freq=None, time=None):
+
+        self.freq = self.du(freq, u.GHz)
+        self.time = self.du(time, u.hr)
+        self.U    = U
+        self.V    = V
+
+    def dict(self):
+        return {
+            'freq': self.freq.to(u.GHz).value,
+            'time': self.time.to(u.hr ).value,
+            'U'   : self.U,
+            'V'   : self.V,
+        }
+
+class Visibility(u.SpecificTypeQuantity):
+
+    _equivalent_unit = u.Jy
+
+    def __new__(cls,
+                vis, *args,
+                meta=None, unit=None, dtype=None, copy=True, **kwargs):
+
+        if unit is None:
+            unit = cls._equivalent_unit
+
+        if meta is None:
+            meta = VisibilityMeta(*args, **kwargs)
+
+        self = super().__new__(cls, vis, unit, dtype, copy)
+        self.meta = meta
+        return self
+
+    @property
+    def uvd(self):
+        m = self.meta
+        return np.array([m.U, m.V])
+
+    @property
+    def extent(self):
+        U, V = self.uvd
+        return [-U/2, U/2, 0, V/2]
+
+    @property
+    def extent_labels(self):
+        return ['u [G$\lambda$]', 'v [G$\lambda$]']
