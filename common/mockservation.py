@@ -77,3 +77,71 @@ def upfft(imgs, width, height, N=None):
     # We use fftshift() to move the zeroth Fourier component to the index N // 2
     spec = np.fft.fftshift(np.fft.rfft2(np.fft.fftshift(imgs, axes=(-2,-1)), norm='backward'), axes=-2)
     return spec, U, V
+
+
+def downifft(spec, U, V, N=None, show=False):
+
+    Nu =      spec.shape[-2]
+    Nv = 2 * (spec.shape[-1] - 1)
+    if not evendim(spec):
+        Nv += 1
+        print("WARNING: the last dimension should be odd; but ifft is making it even")
+
+    if not isclose(U, V):
+        print("WARNING: image resolution is anisotropic")
+
+    width  = Nu / U
+    height = Nv / V
+    if not isclose(width, height):
+        print("WARNING: image FOV is anisotropic")
+
+    if isinstance(N, Number):
+        N   = np.array([N, N])
+    elif isinstance(N, (list, tuple)) and len(N) == 2 and all(isinstance(n, Number) for n in N):
+        N   = np.array(N)
+    else: # try to make FoV as isotropic as possible
+        uvd = min(abs(U), abs(V))
+        W   = round(Nu * abs(uvd / U))
+        H   = round(Nv * abs(uvd / V))
+        N   = np.array([W, H])
+        print(f"{(Nu, Nv)} -> {N}") # note padding does not affect FoV
+
+    assert N[0] <= Nu and N[1] <= Nv
+
+    if N[0] < Nu or N[1] < Nv:
+
+        i = Nu//2 - N[0]//2
+        f = i + N[0]
+
+        trun = spec[...,i:f,:N[1]//2+1] / (Nu * Nv) # makes a copy so we can write to spec below
+        norm = 'forward'
+
+        if N[0] % 2 == 0 and N[0] < Nu:
+            trun[...,0,:] += spec[...,f,:N[1]//2+1].conj() / (Nu * Nv)
+
+        #if N[1] % 2 == 0:
+        if True: # because imgs.shape[-1] is always made even; see first warning in this function
+            H = N[0]//2
+            I = H + 1
+
+            trun[...,H,-1].real *= 2
+            trun[...,H,-1].imag  = 0
+
+            if N[0] % 2 == 0:
+                trun[...,0,-1].real *= 2
+                trun[...,0,-1].imag  = 0
+                trun[...,1:H,-1] += np.flip(trun[...,I: ,-1].conj(), axis=-1)
+                trun[...,I: ,-1]  = np.flip(trun[...,1:H,-1].conj(), axis=-1)
+            else:
+                trun[..., :H,-1] += np.flip(trun[...,I: ,-1].conj(), axis=-1)
+                trun[...,I: ,-1]  = np.flip(trun[..., :H,-1].conj(), axis=-1)
+    else:
+        trun = spec
+        norm = 'backward'
+
+    if show:
+        from matplotlib import pyplot as plt
+        plt.imshow(abs(trun.T), origin='lower')
+
+    imgs = np.fft.fftshift(np.fft.irfft2(np.fft.fftshift(trun, axes=-2), norm=norm), axes=(-2,-1))
+    return imgs, width, height
