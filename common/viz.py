@@ -22,24 +22,26 @@ from matplotlib  import pyplot as plt
 from scipy.stats import norm, poisson
 
 
-def show(imgs, s=None, ax=None, **kwargs):
+def show(vs, s=None, f=None, ax=None, **kwargs):
 
-    if imgs.ndim != 2:
+    if vs.ndim != 2:
         if s is None:
             raise ValueError('must specify snapshot number for movie')
-        img = imgs[s,:,:]
+        v = vs[s,:,:]
     else:
-        img = imgs
+        v = vs
 
-    u    = imgs.fov.unit
-    r, t = imgs.fov.value / 2
+    if f is None:
+        f = lambda x: x
 
     if ax is None:
         fig, ax = plt.subplots(1, 1)
 
-    ax.imshow(img.T, origin='lower', extent=[-r, r, -t, t], **kwargs)
-    ax.set_xlabel(f'Relative R.A. [{u:latex}]')
-    ax.set_ylabel(f'Relative Declination [{u:latex}]')
+    ax.imshow(f(v.T), origin='lower', extent=vs.extent, **kwargs)
+
+    labels = vs.extent_labels
+    ax.set_xlabel(labels[0])
+    ax.set_ylabel(labels[1])
 
     return ax
 
