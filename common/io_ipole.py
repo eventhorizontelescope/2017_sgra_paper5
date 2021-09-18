@@ -22,7 +22,7 @@ from astropy import units
 from . import scale as s
 from . import dalt  as d
 
-def load_hdf5(f, pol=False, **kwargs):
+def load_hdf5(f, pol=True, **kwargs):
 
     def get(u, k):
         return u[k][()]
