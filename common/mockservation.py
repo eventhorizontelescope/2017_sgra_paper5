@@ -151,6 +151,17 @@ def downifft(spec, U, V, N=None, show=False):
     return imgs, width, height
 
 
+def crop(imgs, width, height):
+    meta = copy(imgs.meta)
+    Nw = 2 * ceil(imgs.shape[-2] * width  / meta.width  / 2)
+    Nh = 2 * ceil(imgs.shape[-1] * height / meta.height / 2)
+    iw = imgs.shape[-2]//2 - Nw//2
+    ih = imgs.shape[-1]//2 - Nh//2
+    meta.width  = meta.width  * Nw / imgs.shape[-2]
+    meta.height = meta.height * Nh / imgs.shape[-1]
+    return dalt.Image(copy(imgs.value)[...,iw:iw+Nw,ih:ih+Nh], meta=meta)
+
+
 def mockserve(imgs, N=None):
     px = imgs.fov / imgs.shape[-2:]
     pa = abs(px[0] * px[1])
