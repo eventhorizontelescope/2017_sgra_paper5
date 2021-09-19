@@ -16,11 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with `mockservation`.  If not, see <http://www.gnu.org/licenses/>.
 
-from math    import isclose
+from copy    import copy
+from math    import isclose, ceil
 from numbers import Number
 
 import numpy as np
-from astropy import units as u
+from astropy import units
 
 from . import dalt
 
@@ -154,5 +155,22 @@ def mockserve(imgs, N=None):
     px = imgs.fov / imgs.shape[-2:]
     pa = abs(px[0] * px[1])
     m  = imgs.meta
-    return dalt.Visibility(*upfft(imgs * pa, *imgs.fov.to(u.rad).value, N=N),
+    return dalt.Visibility(*upfft(imgs*pa, *imgs.fov.to(units.rad).value, N=N),
                            freq=m.freq, time=m.time)
+
+def compress(imgs, N=None, cutoff=15e9):
+    fov = imgs.fov.to(units.rad).value
+    spec, U, V = upfft(imgs, *fov, N=N)
+
+    Nu =    spec.shape[-2]
+    Nv = 2*(spec.shape[-1]-1)
+
+    I, W, H = downifft(spec, U, V, N=[
+        2 * ceil(abs(Nu * cutoff / U)),
+        2 * ceil(abs(Nv * cutoff / V)),
+    ])
+
+    meta = copy(imgs.meta)
+    meta.width  = abs(W * meta.dist).to(meta.rg)
+    meta.height = abs(H * meta.dist).to(meta.rg)
+    return dalt.Image(I, meta=meta)
