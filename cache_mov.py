@@ -26,7 +26,8 @@ import h5py
 from tqdm import tqdm
 from yaml import safe_load
 
-from common import hallmark as hm
+from common import hallmark      as hm
+from common import mockservation as mock
 
 def cache_mov(src_fmt, dst_fmt, img_fmt='ipole',
               params=None, order=['snapshot'], **kwargs):
@@ -79,6 +80,9 @@ def cache_mov(src_fmt, dst_fmt, img_fmt='ipole',
 
         # Actually load the images
         mov = io.load_mov(tqdm(sel.path, desc=desc))
+        m   = mov.meta
+        N   = max(mov.shape[-2:])
+        mov = mock.crop(mock.compress(mov, N=2*N), m.width, m.height)
 
         # Only touch file system if everything works
         dst.parent.mkdir(parents=True, exist_ok=True)
