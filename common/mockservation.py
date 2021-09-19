@@ -49,12 +49,12 @@ def evendim(spec):
 
 def upfft(imgs, width, height, N=None):
 
-    if not isclose(width, height):
+    if not isclose(abs(width), abs(height)):
         print("WARNING: image FOV is anisotropic")
 
     U = imgs.shape[-2] / width  # U in unit of lambda when width  in rad
     V = imgs.shape[-1] / height # V in unit of lambda when height in rad
-    if not isclose(U, V):
+    if not isclose(abs(U), abs(V)):
         print("WARNING: image resolution is anisotropic")
 
     if isinstance(N, Number):
@@ -91,12 +91,12 @@ def downifft(spec, U, V, N=None, show=False):
         Nv += 1
         print("WARNING: the last dimension should be odd; but ifft is making it even")
 
-    if not isclose(U, V):
+    if not isclose(abs(U), abs(V)):
         print("WARNING: image resolution is anisotropic")
 
     width  = Nu / U
     height = Nv / V
-    if not isclose(width, height):
+    if not isclose(abs(width), abs(height)):
         print("WARNING: image FOV is anisotropic")
 
     if isinstance(N, Number):
