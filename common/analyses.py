@@ -53,7 +53,7 @@ def moments(img, width, height, FWHM=False):
         minor = float('nan')
 
     return (
-        s,
+        s / img.size,
         w0,
         h0,
         major * f,

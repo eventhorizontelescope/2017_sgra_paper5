@@ -96,8 +96,9 @@ def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
         # Turn list of of list into pandas data frame
         tab = pd.DataFrame(tab, columns=[
             'time', 'time_hr',
-            'Mdot', 'Ladv', 'nuLnu', 'Ftot', 'Fmin', 'Fmax',
-            'Fsum', 'alpha0', 'beta0', 'major_FWHM', 'minor_FWHM', 'PA']
+            'Mdot', 'Ladv', 'nuLnu', 'Ftot',
+            'Imin', 'Imax', 'Imean',
+            'alpha0', 'beta0', 'major_FWHM', 'minor_FWHM', 'PA']
         )
 
         # Only touch file system if everything works
