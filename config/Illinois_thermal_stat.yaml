@@ -1,0 +1,9 @@
+src_fmt:
+  cache/{model}/{mag}a{aspin:g}_i{inc:d}/summ_Rh{Rhigh:d}_230GHz.tsv
+dst_fmt:
+  cache/{model}/stat_{freq}_{type}.tsv
+freqs:
+  - 86GHz
+  - 230GHz
+  - 2um
+  - xray
