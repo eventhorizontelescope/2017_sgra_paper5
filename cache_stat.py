@@ -135,7 +135,12 @@ def cache_summ(src_fmt, dst_fmt, freqs,
         }
 
         for i, row in tqdm(list(sel.iterrows()), desc=desc):
-            prefix = row['path'].removesuffix(f"_{freq_map['230GHz']}.tsv")
+            suffix = f"_{freq_map['230GHz']}.tsv"
+            path   = row['path']
+            if path.endswith(suffix):
+                prefix = path[:-len(suffix)]
+            else:
+                raise ValueError(f'path "{path}" does not end with suffix "{suffix}"')
 
             summ = {
                 k:pd.read_csv(prefix + f'_{v}.tsv', sep='\t')
