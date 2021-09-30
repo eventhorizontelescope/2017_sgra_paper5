@@ -1,0 +1,13 @@
+src_fmt:
+  model/Ressler/beta{beta}/image_dump{snapshot:d}_inc{inc:g}_Munit8.925e-01_Rhigh{Rhigh:g}_freq{freq:e}.h5
+dst_fmt:
+  cache/Ressler/Wa0_i{inc:g}/mov_beta{beta}_{freq:.1e}.h5
+img_fmt:
+  ipole
+params:
+  - beta
+  - inc
+# - Rhigh
+  - freq
+order:
+  - snapshot
