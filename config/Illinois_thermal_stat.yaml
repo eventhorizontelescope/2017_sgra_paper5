@@ -1,9 +1,9 @@
 src_fmt:
-  cache/{model}/{mag}a{aspin:g}_i{inc:d}/summ_Rh{Rhigh:d}_230GHz.tsv
+  cache/Illinois_thermal_w{win:d}/{mag}a{aspin:g}_i{inc:d}/summ_Rh{Rhigh:d}_{freq}.tsv
 dst_fmt:
-  cache/{model}/stat_{freq}_{type}.tsv
+  cache/Illinois_thermal_w{win:d}/stat_{freq}_{type}.tsv
 freqs:
   - 86GHz
   - 230GHz
-  - nir
+  - 2um
   - xray
