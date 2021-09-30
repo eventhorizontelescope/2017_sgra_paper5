@@ -5,5 +5,5 @@ dst_fmt:
 freqs:
   - 86GHz
   - 230GHz
-  - 2um
+  - nir
   - xray
