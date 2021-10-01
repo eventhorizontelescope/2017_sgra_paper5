@@ -29,7 +29,7 @@ from yaml import safe_load
 from common import hallmark      as hm
 from common import mockservation as mock
 
-def cache_mov(src_fmt, dst_fmt, img_fmt='ipole',
+def cache_gt(src_fmt, dst_fmt, img_fmt='ipole',
               params=None, order=['snapshot'], **kwargs):
 
     io = import_module('common.io_' + img_fmt)
@@ -93,7 +93,7 @@ def cache_mov(src_fmt, dst_fmt, img_fmt='ipole',
 
 
 #==============================================================================
-# Make cache_mov() callable as a script
+# Make cache_gt() callable as a script
 
 import click
 
@@ -112,7 +112,7 @@ def cmd(args):
 
     for c in confs:
         with open(c) as f:
-            cache_mov(**safe_load(f), **params)
+            cache_gt(**safe_load(f), **params)
 
 if __name__ == '__main__':
     cmd()
