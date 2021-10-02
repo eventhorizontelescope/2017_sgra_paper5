@@ -84,7 +84,7 @@ def cache_avg(src_fmt, dst_fmt, img_fmt='ipole',
         mov = io.load_mov(tqdm(sel.path, desc=desc))
         m   = copy(mov.meta)
 
-        m.time = a.mean()[np.newaxis]
+        m.time = m.time.mean()[np.newaxis]
         avg    = dalt.Image(np.mean(mov, axis=0)[np.newaxis, ...], meta=m)
 
         # Only touch file system if everything works
