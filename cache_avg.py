@@ -27,6 +27,7 @@ import h5py
 from tqdm import tqdm
 from yaml import safe_load
 
+from common import dalt
 from common import hallmark      as hm
 from common import mockservation as mock
 
@@ -83,8 +84,8 @@ def cache_avg(src_fmt, dst_fmt, img_fmt='ipole',
         mov = io.load_mov(tqdm(sel.path, desc=desc))
         m   = copy(mov.meta)
 
-        m.time = np.array([np.mean(m.time.value)])
-        avg    = Image(np.mean(mov, axis=0)[np.newaxis, ...], meta=m)
+        m.time = a.mean()[np.newaxis]
+        avg    = dalt.Image(np.mean(mov, axis=0)[np.newaxis, ...], meta=m)
 
         # Only touch file system if everything works
         dst.parent.mkdir(parents=True, exist_ok=True)
