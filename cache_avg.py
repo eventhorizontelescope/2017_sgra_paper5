@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from copy      import copy
 from pathlib   import Path
 from itertools import product
 from importlib import import_module
@@ -29,7 +30,7 @@ from yaml import safe_load
 from common import hallmark      as hm
 from common import mockservation as mock
 
-def cache_mov(src_fmt, dst_fmt, img_fmt='ipole',
+def cache_avg(src_fmt, dst_fmt, img_fmt='ipole',
               params=None, order=['snapshot'], **kwargs):
 
     io = import_module('common.io_' + img_fmt)
@@ -80,18 +81,21 @@ def cache_mov(src_fmt, dst_fmt, img_fmt='ipole',
 
         # Actually load the images
         mov = io.load_mov(tqdm(sel.path, desc=desc))
-        m   = mov.meta
+        m   = copy(mov.meta)
+
+        m.time = np.array([np.mean(m.time)])
+        avg    = Image(np.mean(mov, axis=0)[np.newaxis, ...], meta=m)
 
         # Only touch file system if everything works
         dst.parent.mkdir(parents=True, exist_ok=True)
         with h5py.File(dst, 'w') as f:
-            f['data'] = mov
-            for k, v in mov.meta.dict().items():
+            f['data'] = avg
+            for k, v in avg.meta.dict().items():
                 f['meta/'+k] = v
 
 
 #==============================================================================
-# Make cache_mov() callable as a script
+# Make cache_avg() callable as a script
 
 import click
 
@@ -110,7 +114,7 @@ def cmd(args):
 
     for c in confs:
         with open(c) as f:
-            cache_mov(**safe_load(f), **params)
+            cache_avg(**safe_load(f), **params)
 
 if __name__ == '__main__':
     cmd()
