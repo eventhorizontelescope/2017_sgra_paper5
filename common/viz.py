@@ -128,15 +128,18 @@ def step(ax, nu, avg, std=None, color=None, shade=None, label=None, **kwargs):
                  **kwargs)
 
 
-def grid(pf, plot, **kwargs):
-    fout   = kwargs.pop('fout',   None)
-    title  = kwargs.pop('title',  None)
-    xtitle = kwargs.pop('xtitle', None)
-    ytitle = kwargs.pop('ytitle', None)
-    xlabel = kwargs.pop('xlabel', None)
-    ylabel = kwargs.pop('ylabel', None)
-    xspace = kwargs.pop('xspace', 0.05)
-    yspace = kwargs.pop('yspace', 0)
+def grid(pf, plot,
+         fout   = None,
+         title  = None,
+         xtitle = None,
+         ytitle = None,
+         xlabel = None,
+         ylabel = None,
+         xspace = 0.05,
+         yspace = 0,
+         legend = None,
+         **kwargs):
+
 
     keys   = list(kwargs.keys())
     colkey = keys[0]
@@ -175,9 +178,14 @@ def grid(pf, plot, **kwargs):
             if j == len(rows)-1:
                 axes[j][i].set_xlabel(xlabel)
 
+    if legend is not None:
+        axes[0][-1].legend(loc=legend)
+
     fig.suptitle(title)
     fig.tight_layout()
     fig.subplots_adjust(wspace=xspace, hspace=yspace)
     if fout:
         fig.savefig(fout+'.pdf')
         fig.savefig(fout+'.png')
+
+    return fig
