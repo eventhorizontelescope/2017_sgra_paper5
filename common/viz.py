@@ -96,7 +96,7 @@ def interval(avg, std, sigma=1):
 
 def step_one(ax, nu, avg, std=None, sigma=1,
              step=True, shade=True, ylog=True, **kwargs):
-    
+
     if step:
         p = ax.step(nu, avg, where='mid', **kwargs)
     else:
@@ -127,7 +127,7 @@ def step(ax, nu, avg, std=None, color=None, shade=None, label=None, **kwargs):
                  shade=shadei, label=labeli,
                  **kwargs)
 
-        
+
 def grid(pf, plot, **kwargs):
     fout   = kwargs.pop('fout',   None)
     title  = kwargs.pop('title',  None)
@@ -143,32 +143,38 @@ def grid(pf, plot, **kwargs):
     cols   = kwargs.pop(keys[0])
     rowkey = keys[1]
     rows   = kwargs.pop(keys[1])
-    
+
     fig, axes = plt.subplots(len(rows), len(cols), sharex=True, sharey=True, **kwargs)
-    
+    if len(rows) == 1:
+        axes = [axes]
+    if len(cols) == 1:
+        axes = [[a] for a in axes]
+
     for i, c in enumerate(cols):
         for j, r in enumerate(rows):
             plot(axes[j][i], pf(**{colkey:c})(**{rowkey:r}))
-            
+
             axes[j][i].tick_params(axis='both',
                                    direction='in',
-                                   top=True, 
+                                   top=True,
                                    right=True)
-            
+
             if i == 0:
                 axes[j][i].set_ylabel(ylabel)
             if i == len(cols)-1:
                 ax_r = axes[j][i].twinx()
-                ax_r.set_ylabel(ytitle.format(r))
+                if ytitle is not None:
+                    ax_r.set_ylabel(ytitle.format(r))
                 ax_r.tick_params(axis='both',
                                  direction='in',
                                  labelright=False)
 
             if j == 0:
-                axes[j][i].set_title(xtitle.format(c))
+                if xtitle is not None:
+                    axes[j][i].set_title(xtitle.format(c))
             if j == len(rows)-1:
                 axes[j][i].set_xlabel(xlabel)
-    
+
     fig.suptitle(title)
     fig.tight_layout()
     fig.subplots_adjust(wspace=xspace, hspace=yspace)
