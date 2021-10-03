@@ -33,7 +33,13 @@ from scipy.interpolate import interp2d
 from common import hallmark as hm
 from common import analyses as mm
 
-types = ['lc', 'loglc', 'sed', 'logsed', 'mi1', 'mi3', 'mi10', 'major', 'minor']
+types = ['lc',   'loglc',
+         'sed',  'logsed',
+         'mi1',  'logmi1',
+         'mi3',  'logmi3',
+         'mi10', 'logmi10',
+         'major','logmajor',
+         'minor','logminor']
 
 def Fnu_to_nuLnu(nu, Fnu):
     d = 8.127e3 * u.pc
@@ -158,33 +164,29 @@ def cache_summ(src_fmt, dst_fmt, freqs,
 
                 # Now we need to do the actual works...
                 try:
-                    if   t == 'lc':
+                    if   t.endswith('lc'):
                         vals = summ[f].Ftot
-                    elif t == 'loglc':
-                        vals = np.log10(summ[f].Ftot)
-                    elif t == 'sed':
+                    elif t.endswith('sed'):
                         vals = sed(freq_val[f], time)
-                        if f != 'xray':
+                        if f != 'xray'):
                             vals = nuLnu_to_Fnu(freq_val[f], vals)
-                    elif t == 'logsed':
-                        vals = sed(freq_val[f], time)
-                        if f != 'xray':
-                            vals = nuLnu_to_Fnu(freq_val[f], vals)
-                        vals = np.log10(vals)
-                    elif t == 'mi1':
+                    elif t.endswith('mi1'):
                         vals = mi(summ[f].time_hr, summ[f].Ftot, T=1)
-                    elif t == 'mi3':
+                    elif t.endswith('mi3'):
                         vals = mi(summ[f].time_hr, summ[f].Ftot, T=3)
-                    elif t == 'mi10':
+                    elif t.endswith('mi10'):
                         vals = mi(summ[f].time_hr, summ[f].Ftot, T=10)
-                    elif t == 'major':
+                    elif t.endswith('major'):
                         vals = summ[f].major_FWHM
-                    elif t == 'minor':
+                    elif t.endswith('minor'):
                         vals = summ[f].minor_FWHM
                     else:
                         raise KeyError(f'unknown key "{t}"')
                 except:
                     continue
+
+                if t.startswith('log'):
+                    vals = np.log10(vals)
 
                 out = {k:row[k] for k in order}
                 out.update(stat(vals))
