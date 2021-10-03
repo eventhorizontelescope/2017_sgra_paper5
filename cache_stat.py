@@ -178,9 +178,9 @@ def cache_summ(src_fmt, dst_fmt, freqs,
                     elif t == 'mi10':
                         vals = mi(summ[f].time_hr, summ[f].Ftot, T=10)
                     elif t == 'major':
-                        vals = mi(summ[f].time_hr, summ[f].major_FWHM)
+                        vals = summ[f].major_FWHM
                     elif t == 'minor':
-                        vals = mi(summ[f].time_hr, summ[f].minor_FWHM)
+                        vals = summ[f].minor_FWHM
                     else:
                         raise KeyError(f'unknown key "{t}"')
                 except:
