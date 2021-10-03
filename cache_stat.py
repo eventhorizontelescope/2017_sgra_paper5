@@ -168,7 +168,7 @@ def cache_summ(src_fmt, dst_fmt, freqs,
                         vals = summ[f].Ftot
                     elif t.endswith('sed'):
                         vals = sed(freq_val[f], time)
-                        if f != 'xray'):
+                        if f != 'xray':
                             vals = nuLnu_to_Fnu(freq_val[f], vals)
                     elif t.endswith('mi1'):
                         vals = mi(summ[f].time_hr, summ[f].Ftot, T=1)
