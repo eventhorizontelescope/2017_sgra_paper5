@@ -148,7 +148,7 @@ def grid(pf, plot,
     rows   = kwargs.pop(keys[1])
 
     fig, axes = plt.subplots(len(rows), len(cols),
-                             #sharex=True, sharey=True,
+                             sharex=True, sharey=True,
                              **kwargs)
     if len(rows) == 1:
         axes = [axes]
