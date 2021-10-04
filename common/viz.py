@@ -22,7 +22,7 @@ from matplotlib  import pyplot as plt
 from scipy.stats import norm, poisson
 
 
-def show(vs, s=None, f=None, ax=None, **kwargs):
+def show(vs, s=None, f=None, ax=None, labels=True, **kwargs):
 
     if vs.ndim != 2:
         if s is None:
@@ -39,9 +39,10 @@ def show(vs, s=None, f=None, ax=None, **kwargs):
 
     ax.imshow(f(v.T), origin='lower', extent=vs.extent, **kwargs)
 
-    labels = vs.extent_labels
-    ax.set_xlabel(labels[0])
-    ax.set_ylabel(labels[1])
+    if labels:
+        labels = vs.extent_labels
+        ax.set_xlabel(labels[0])
+        ax.set_ylabel(labels[1])
 
     return ax
 
@@ -148,7 +149,8 @@ def grid(pf, plot,
     rows   = kwargs.pop(keys[1])
 
     fig, axes = plt.subplots(len(rows), len(cols),
-                             sharex=True, sharey=True,
+                             #sharex=True,
+                             #sharey=True,
                              **kwargs)
     if len(rows) == 1:
         axes = [axes]
@@ -162,17 +164,27 @@ def grid(pf, plot,
 
             if i == 0:
                 axes[j][i].set_ylabel(ylabel)
+            else:
+                axes[j][i].set_yticklabels([])
+                
             if i == len(cols)-1 and ytitle is not None:
                 ax_r = axes[j][i].twinx()
                 ax_r.set_ylabel(ytitle.format(r))
-                ax_r.tick_params(axis='both',
-                                 direction='in',
-                                 labelright=False)
+                #ax_r.tick_params(axis='both',
+                #                 direction='in',
+                #                 labelright=False)
+                ax_r.yaxis.set_ticks([])
+                ax_r.tick_params(color='w')
+                for spine in ax_r.spines.values():
+                    spine.set_edgecolor('w')
 
             if j == 0 and xtitle is not None:
                     axes[j][i].set_title(xtitle.format(c))
+                    
             if j == len(rows)-1:
                 axes[j][i].set_xlabel(xlabel)
+            else:
+                axes[j][i].set_xticklabels([])
 
             axes[j][i].tick_params(axis='both',
                                    direction='in',
