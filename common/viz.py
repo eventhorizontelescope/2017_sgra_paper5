@@ -147,7 +147,9 @@ def grid(pf, plot,
     rowkey = keys[1]
     rows   = kwargs.pop(keys[1])
 
-    fig, axes = plt.subplots(len(rows), len(cols), sharex=True, sharey=True, **kwargs)
+    fig, axes = plt.subplots(len(rows), len(cols),
+                             #sharex=True, sharey=True,
+                             **kwargs)
     if len(rows) == 1:
         axes = [axes]
     if len(cols) == 1:
@@ -155,28 +157,27 @@ def grid(pf, plot,
 
     for i, c in enumerate(cols):
         for j, r in enumerate(rows):
+
             plot(axes[j][i], pf(**{colkey:c})(**{rowkey:r}))
+
+            if i == 0:
+                axes[j][i].set_ylabel(ylabel)
+            if i == len(cols)-1 and ytitle is not None:
+                ax_r = axes[j][i].twinx()
+                ax_r.set_ylabel(ytitle.format(r))
+                ax_r.tick_params(axis='both',
+                                 direction='in',
+                                 labelright=False)
+
+            if j == 0 and xtitle is not None:
+                    axes[j][i].set_title(xtitle.format(c))
+            if j == len(rows)-1:
+                axes[j][i].set_xlabel(xlabel)
 
             axes[j][i].tick_params(axis='both',
                                    direction='in',
                                    top=True,
                                    right=True)
-
-            if i == 0:
-                axes[j][i].set_ylabel(ylabel)
-            if i == len(cols)-1:
-                ax_r = axes[j][i].twinx()
-                if ytitle is not None:
-                    ax_r.set_ylabel(ytitle.format(r))
-                ax_r.tick_params(axis='both',
-                                 direction='in',
-                                 labelright=False)
-
-            if j == 0:
-                if xtitle is not None:
-                    axes[j][i].set_title(xtitle.format(c))
-            if j == len(rows)-1:
-                axes[j][i].set_xlabel(xlabel)
 
     if legend is not None:
         axes[0][-1].legend(loc=legend)
@@ -186,6 +187,6 @@ def grid(pf, plot,
     fig.subplots_adjust(wspace=xspace, hspace=yspace)
     if fout:
         fig.savefig(fout+'.pdf')
-        fig.savefig(fout+'.png')
+        fig.savefig(fout+'.png', dpi=300)
 
     return fig
