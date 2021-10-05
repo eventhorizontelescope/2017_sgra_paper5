@@ -174,9 +174,9 @@ def grid(pf, plot,
                 #                 direction='in',
                 #                 labelright=False)
                 ax_r.yaxis.set_ticks([])
-                ax_r.tick_params(color='w')
-                for spine in ax_r.spines.values():
-                    spine.set_edgecolor('w')
+                #ax_r.tick_params(color='w')
+                #for spine in ax_r.spines.values():
+                #    spine.set_edgecolor('w')
 
             if j == 0 and xtitle is not None:
                     axes[j][i].set_title(xtitle.format(c))
