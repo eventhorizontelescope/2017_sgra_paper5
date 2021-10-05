@@ -166,7 +166,7 @@ def grid(pf, plot,
                 axes[j][i].set_ylabel(ylabel)
             else:
                 axes[j][i].set_yticklabels([])
-                
+
             if i == len(cols)-1 and ytitle is not None:
                 ax_r = axes[j][i].twinx()
                 ax_r.set_ylabel(ytitle.format(r))
@@ -180,7 +180,7 @@ def grid(pf, plot,
 
             if j == 0 and xtitle is not None:
                     axes[j][i].set_title(xtitle.format(c))
-                    
+
             if j == len(rows)-1:
                 axes[j][i].set_xlabel(xlabel)
             else:
