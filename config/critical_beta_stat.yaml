@@ -1,0 +1,16 @@
+src_fmt:
+  cache/critical_beta/{mag}a{aspin}_i{inc:d}/summ_f{f:g}_b{beta:g}_2.3e+11.tsv
+  # TO FIX: cache_stat.py is hardwired to replace "2.3e+11"        ^^^^^^ with other freqs
+dst_fmt:
+  cache/critical_beta/stat_{freq}_{type}.tsv
+order:
+  - mag
+  - aspin
+  - f
+  - beta
+  - inc
+freqs:
+  - '8.6e+10'
+  - '2.3e+11'
+  - '1.4e+14'
+  - xray

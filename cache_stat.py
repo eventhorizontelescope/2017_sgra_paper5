@@ -98,6 +98,7 @@ def cache_summ(src_fmt, dst_fmt, freqs,
         params = list(pf.keys())
         params.remove('path')
         for k in order:
+            print(params, k)
             params.remove(k)
     params = {p:np.unique(pf[p]) for p in params}
 
@@ -148,16 +149,21 @@ def cache_summ(src_fmt, dst_fmt, freqs,
             else:
                 raise ValueError(f'path "{path}" does not end with suffix "{suffix}"')
 
-            summ = {
-                k:pd.read_csv(prefix + f'_{v}.tsv', sep='\t')
-                for k, v in list(freq_map.items())[:3]
-            }
+            summ = {}
+            for k, v in list(freq_map.items())[:3]:
+                try:
+                    summ[k] = pd.read_csv(prefix + f'_{v}.tsv', sep='\t')
+                except:
+                    pass
 
-            with h5py.File(prefix.replace('/summ_', '/sed_') + '.h5') as h:
-                time = h['time'][()]
-                nu   = h['nu'  ][()]
-                avg  = h['avg' ][()]
-            sed = interp2d(nu, time, avg[:,:,0]) # in nuLnu
+            try:
+                with h5py.File(prefix.replace('/summ_', '/sed_') + '.h5') as h:
+                    time = h['time'][()]
+                    nu   = h['nu'  ][()]
+                    avg  = h['avg' ][()]
+                sed = interp2d(nu, time, avg[:,:,0]) # in nuLnu
+            except:
+                pass
 
             for f, t in product(freq_map, types):
                 key = f'{f}_{t}'
