@@ -1,0 +1,6 @@
+src_fmt:
+  model/Hamr_varkappa/SEDs/spectrum_Symty_{mag}_a{aspin:d}_Righ{Rhigh:g}_Incl{inc:g}_Snap{snapshot:d}.h5
+dst_fmt:
+  cache/Hamr_varkappa/{mag}_a{aspin:d}_i{inc:g}/sed_Rh{Rhigh:g}.h5
+order:
+  - snapshot
