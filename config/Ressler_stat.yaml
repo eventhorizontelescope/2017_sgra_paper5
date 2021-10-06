@@ -1,0 +1,12 @@
+src_fmt:
+  cache/Ressler/Wa0_i179/summ_beta{beta:g}_2.3e+11.tsv
+  # TO FIX: cache_stat.py is hardwired to  ^^^^^^ replace "2.3e+11" with other freqs
+dst_fmt:
+  cache/Ressler/stat_{freq}_{type}.tsv
+order:
+  - beta
+freqs:
+  - '8.6e+10'
+  - '2.3e+11'
+  - '1.4e+14'
+  - xray
