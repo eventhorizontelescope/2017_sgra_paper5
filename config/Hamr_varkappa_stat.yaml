@@ -1,0 +1,10 @@
+src_fmt:
+  cache/Hamr_varkappa/{mag}_a{aspin:g}_i{inc:d}/summ_Rh{Rhigh:d}_230GHz.tsv
+  # TO FIX: cache_stat.py is hardwired to replace "230GHz"       ^^^^^^ with other freqs
+dst_fmt:
+  cache/Hamr_varkappa/stat_{freq}_{type}.tsv
+freqs:
+  - 86GHz
+  - 230GHz
+  - 2um
+  - xray

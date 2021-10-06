@@ -98,7 +98,6 @@ def cache_summ(src_fmt, dst_fmt, freqs,
         params = list(pf.keys())
         params.remove('path')
         for k in order:
-            print(params, k)
             params.remove(k)
     params = {p:np.unique(pf[p]) for p in params}
 
