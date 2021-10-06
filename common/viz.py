@@ -132,6 +132,8 @@ def step(ax, nu, avg, std=None, color=None, shade=None, label=None, **kwargs):
 def grid(pf, plot,
          fout   = None,
          title  = None,
+         rowmap = None,
+         colmap = None,
          xtitle = None,
          ytitle = None,
          xlabel = None,
@@ -169,7 +171,10 @@ def grid(pf, plot,
 
             if i == len(cols)-1 and ytitle is not None:
                 ax_r = axes[j][i].twinx()
-                ax_r.set_ylabel(ytitle.format(r))
+                if rowmap is not None:
+                    ax_r.set_ylabel(ytitle.format(rowmap[r]))
+                else:
+                    ax_r.set_ylabel(ytitle.format(r))
                 #ax_r.tick_params(axis='both',
                 #                 direction='in',
                 #                 labelright=False)
@@ -179,6 +184,9 @@ def grid(pf, plot,
                 #    spine.set_edgecolor('w')
 
             if j == 0 and xtitle is not None:
+                if colmap is not None:
+                    axes[j][i].set_title(xtitle.format(colmap[c]))
+                else:
                     axes[j][i].set_title(xtitle.format(c))
 
             if j == len(rows)-1:
