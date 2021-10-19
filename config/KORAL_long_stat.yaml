@@ -1,0 +1,14 @@
+src_fmt:
+  cache/KORAL_long/M_a{aspin}_i{inc:g}/summ_Rh{Rhigh:g}_230.tsv
+  # TO FIX: cache_stat.py is hardwired to replace "230" ^^^ with other freqs
+dst_fmt:
+  cache/KORAL_long/stat_{freq}_{type}.tsv
+order:
+  - aspin
+  - Rhigh
+  - inc
+freqs:
+  - '86'
+  - '230'
+  - '140000'
+  - 'xray'

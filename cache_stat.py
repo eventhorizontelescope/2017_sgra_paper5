@@ -76,7 +76,7 @@ def stat(vals):
     qs = np.percentile(vals, [0, 25, 50, 75, 100])
     return dict(zip(stat_keys, [len(vals),m,s]+list(qs)))
 
-def cache_summ(src_fmt, dst_fmt, freqs,
+def cache_stat(src_fmt, dst_fmt, freqs,
                params=None, order=['mag', 'aspin', 'Rhigh', 'inc'], **kwargs):
 
     freq_out = ['86GHz', '230GHz', 'NIR', 'xray']
@@ -96,6 +96,7 @@ def cache_summ(src_fmt, dst_fmt, freqs,
     # a dict of parameters and their unique values
     if params is None:
         params = list(pf.keys())
+        print(params, order)
         params.remove('path')
         for k in order:
             params.remove(k)
@@ -206,7 +207,7 @@ def cache_summ(src_fmt, dst_fmt, freqs,
                 tab[key].to_csv(dst[key], sep='\t', index=False)
 
 #==============================================================================
-# Make cache_summ() callable as a script
+# Make cache_stat() callable as a script
 
 import click
 
@@ -225,7 +226,7 @@ def cmd(args):
 
     for c in confs:
         with open(c) as f:
-            cache_summ(**safe_load(f), **params)
+            cache_stat(**safe_load(f), **params)
 
 if __name__ == '__main__':
     cmd()
