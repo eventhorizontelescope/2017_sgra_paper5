@@ -113,8 +113,8 @@ class Image(u.SpecificTypeQuantity):
     @property
     def extent_labels(self):
         u = self.fov.unit
-        return [f'Relative R.A. [{u:latex}]',
-                f'Relative Declination [{u:latex}]']
+        return [f'$x$ [{u:latex}]',
+                f'$y$ [{u:latex}]']
 
 
 class VisibilityMeta:
