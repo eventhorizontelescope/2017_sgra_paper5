@@ -96,7 +96,6 @@ def cache_stat(src_fmt, dst_fmt, freqs,
     # a dict of parameters and their unique values
     if params is None:
         params = list(pf.keys())
-        print(params, order)
         params.remove('path')
         for k in order:
             params.remove(k)
@@ -191,12 +190,15 @@ def cache_stat(src_fmt, dst_fmt, freqs,
                 except:
                     continue
 
+                if len(vals) == 0:
+                    continue
+
                 if t.startswith('log'):
                     vals = np.log10(vals)
 
                 out = {k:row[k] for k in order}
                 out.update(stat(vals))
-
+                
                 tab[key] = tab[key].append(out, ignore_index=True)
 
         # Only touch file system if everything works
