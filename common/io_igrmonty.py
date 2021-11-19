@@ -64,12 +64,7 @@ def load_sed(files, **kwargs):
     nuLnu = []
     for f in files:
         data = load_one(f, **kwargs)
-
-        try:
-            if t != data[0]:
-                raise ValueError('Time `t` do not match')
-        except NameError:
-            t = data[0]
+        t    = data[0]
 
         try:
             if all(nu != data[1]):
