@@ -1,0 +1,4 @@
+src_fmt:
+  cache/Illinois_thermal_w{win:d}/{mag}a{aspin:g}_i{inc:d}/gt_Rh{Rhigh:d}_230GHz.h5
+dst_fmt:
+  cache/Illinois_thermal_w{win:d}/null.tsv
