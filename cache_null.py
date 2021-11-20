@@ -36,7 +36,7 @@ from common import mockservation as mk
 
 def cache_null(src_fmt, dst_fmt,
                params=None, order=['mag', 'aspin', 'Rhigh', 'inc'],
-               dpa=45, nmin=2.5e9, nmax=3.5e9, bmin=6e9,  bmax=8e9, lamp=0.04, scat=0.5,
+               nmin=2.5e9, nmax=3.5e9, bmin=6e9,  bmax=8e9, lamp=0.04, scat=0.5,
                **kwargs):
 
     dlen = 0 # for pretty format in `tqdm`
@@ -84,7 +84,7 @@ def cache_null(src_fmt, dst_fmt,
 
         # Actually load the cache and perform the analysis
         tab = pd.DataFrame(columns=order+['score'])
-        uvd = np.linspace(0, 1.024e10, 1024)
+        uvd = np.linspace(0, bmax, round(bmax/2e8)+1)
         for i, row in tqdm(list(sel.iterrows()), desc=desc):
             with h5py.File(row.path) as h:
                 m    = h['meta']
@@ -92,12 +92,13 @@ def cache_null(src_fmt, dst_fmt,
                 data = h['data'][:]
 
             mov = dalt.Image(data, meta=meta)
-            vis = mk.mockserve(mov, N=256)
+            vis = mk.mockserve(mov, N=128)
 
             U, V = vis.uvd
 
             u = np.linspace( 0,   U/2, num=vis.shape[-1])
             v = np.linspace(-V/2, V/2, num=vis.shape[-2], endpoint=False)
+
             t = vis.meta.time.value
 
             # Ugly hack...
@@ -110,18 +111,14 @@ def cache_null(src_fmt, dst_fmt,
 
             good = 0
             for t0 in t:
-
                 null_pass = False
-                lamp_pass = False
-
-                for j in range(-90,90,dpa):
+                lamp_pass = True
+                for j in range(-90,90,45):
                     phi = np.pi * j / 180
-
                     u = uvd * np.cos(phi)
                     v = uvd * np.sin(phi)
 
                     mask = u <= 0
-
                     p = np.array([np.repeat(t0, np.sum( mask)),  v[ mask],  u[ mask]]).T
                     m = np.array([np.repeat(t0, np.sum(~mask)), -v[~mask], -u[~mask]]).T
 
@@ -135,14 +132,13 @@ def cache_null(src_fmt, dst_fmt,
                             null_pass = True
 
                     la = np.median(s[(bmin <= uvd) & (uvd <= bmax)])
-                    if la * scat < lamp:
-                        lamp_pass = True
+                    if la * scat > s[0] * lamp:
+                        lamp_pass = False
 
                     # print(t0, j, uvd[ni], s[ni], la)
 
-                    if null_pass and lamp_pass:
-                        good += 1
-                        break
+                if null_pass and lamp_pass:
+                    good += 1
 
             out = {k:row[k] for k in order}
             out['score'] = good / len(t)
