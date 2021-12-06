@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with `blackholepy`.  If not, see <http://www.gnu.org/licenses/>.
 
+import numpy as np
 from astropy import units
 from astropy.io import fits
 
@@ -48,12 +49,17 @@ def load_fits(f, pol=True, **kwargs):
     nx = h['NAXIS1']
     ny = h['NAXIS2']
     # FOV/px ~ CDELT appears to be in degrees
-    fov_to_d = dsource / L_unit / (3600*1e6)
-    width = abs(nx*h['CDELT1']*fov_to_d)
-    height = abs(ny*h['CDELT2']*fov_to_d)
+    fov_to_d = dsource / L_unit / 2.06265e11 # latter is muas_per_rad
+    width = abs(nx*h['CDELT1']*3600*1e6*fov_to_d)
+    height = abs(ny*h['CDELT2']*3600*1e6*fov_to_d)
 
     scale = (width * L_unit / nx) * (height * L_unit / ny) / (dsource * dsource) / 1e-23
     img  =  f.data / scale
+
+    #print("L_unit: {}".format(L_unit))
+    #print("FOV in deg: {} {} M: {} x {}".format(nx*h['CDELT1'], ny*h['CDELT2'], width, height))
+    #print("Scale: {}".format(scale))
+    #print("Total flux in image: {} header: {}".format(np.sum(img*scale), h['STOT']))
 
     return d.Image(img, MBH, dist, freq, time, width, height, **kwargs)
 
