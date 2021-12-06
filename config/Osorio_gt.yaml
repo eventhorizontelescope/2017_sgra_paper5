@@ -1,0 +1,8 @@
+src_fmt:
+  model/Osorio_SgrA/{mag}/images/a{aspin}/SgrA_{mag}_a{aspin}_{freq}_Rhigh{Rhigh:d}_inc{inc:d}_{snapshot:d}.fits
+dst_fmt:
+  cache/Osorio_SgrA/{mag}_a{aspin}_i{inc:d}/gt_Rh{Rhigh:d}_{freq}.h5
+img_fmt:
+  fits
+order:
+  - snapshot
