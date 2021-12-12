@@ -153,7 +153,7 @@ def cache_stat(src_fmt, dst_fmt, freqs,
                 try:
                     summ[k] = pd.read_csv(prefix + f'_{v}.tsv', sep='\t')
                 except:
-                    pass
+                    print(f'Failed to read {prefix}_{v}.tsv')
 
             try:
                 with h5py.File(prefix.replace('/summ_', '/sed_') + '.h5') as h:
@@ -162,7 +162,8 @@ def cache_stat(src_fmt, dst_fmt, freqs,
                     avg  = h['avg' ][()]
                 sed = interp2d(nu, time, avg[:,:,0]) # in nuLnu
             except:
-                pass
+                print(f'Failed to read {prefix.replace("/summ_", "/sed_")}.h5')
+                sed = lambda f, v: np.repeat(np.nan, len(v))
 
             for f, t in product(freq_map, types):
                 key = f'{f}_{t}'
