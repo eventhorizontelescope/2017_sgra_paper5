@@ -52,7 +52,7 @@ def load_hdf5(f, i=70, di=10):
         W += w
         T += w * nuLnu[:,:,mth[j]]
 
-    return get(f, 'fluid_header/t'), nu, T.T / W
+    return get(f, 'params/t'), nu, T.T / W
 
 def load_one(f, **kwargs):
     if isinstance(f, h5py.File):
