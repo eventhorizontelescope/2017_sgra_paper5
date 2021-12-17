@@ -1,0 +1,6 @@
+src_fmt:
+  model/Frankfurt_thermal/SED/{mag}/a{aspin:g}_i{inc:d}_R{Rhigh:d}/{snapshot:d}_spec.h5
+dst_fmt:
+  cache/Frankfurt_thermal/{mag}a{aspin}_i{inc:d}/sed_Rh{Rhigh:d}.h5
+order:
+  - snapshot
