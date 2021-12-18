@@ -66,8 +66,9 @@ def ellipse(a0, b0, major, minor, PA, ax=None, diameter=False, **kwargs):
     if ax is None:
         fig, ax = plt.subplots(1, 1)
 
-    ax.plot(a, b, linewidth=1, **kwargs)
-    ax.plot([a[90],a[270]], [b[90],b[270]], '--', linewidth=1, **kwargs)
+    ax.plot(a, b, **kwargs)
+    if major != minor:
+        ax.plot([a[90],a[270]], [b[90],b[270]], '--', **kwargs)
 
     return ax
 

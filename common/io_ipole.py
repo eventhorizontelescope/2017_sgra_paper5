@@ -42,7 +42,7 @@ def load_hdf5(f, pol=True, **kwargs):
         height = get(c, 'dy')
     except:
         height = width
-
+    # print(MBH, dist, freq, time, width, height)
     return d.Image(img, MBH, dist, freq, time, width, height, **kwargs)
 
 def load_img(f, **kwargs):
