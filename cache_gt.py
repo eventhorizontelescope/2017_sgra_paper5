@@ -79,7 +79,7 @@ def cache_gt(src_fmt, dst_fmt, img_fmt='ipole',
             sel = sel.sort_values(k)
 
         # Actually load the images
-        mov = io.load_mov(tqdm(sel.path, desc=desc))
+        mov = io.load_mov(tqdm(sel.path, desc=desc), pol=False)
         m   = mov.meta
         N   = max(mov.shape[-2:])
         mov = mock.crop(mock.compress(mov, N=2*N), m.width, m.height)

@@ -44,7 +44,10 @@ def load_fits(f, pol=True, **kwargs):
     dist = dsource * units.cm
     freq = h['FREQ'] * units.Hz
 
-    time  = h['TIME']
+    try:
+        time  = h['TIME']
+    except KeyError:
+        time = 0
 
     nx = h['NAXIS1']
     ny = h['NAXIS2']
@@ -54,7 +57,7 @@ def load_fits(f, pol=True, **kwargs):
     height = abs(ny*h['CDELT2']*3600*1e6*fov_to_d)
 
     scale = (width * L_unit / nx) * (height * L_unit / ny) / (dsource * dsource) / 1e-23
-    img  =  f.data / scale
+    img  =  f.data.T / scale
 
     #print("L_unit: {}".format(L_unit))
     #print("FOV in deg: {} {} M: {} x {}".format(nx*h['CDELT1'], ny*h['CDELT2'], width, height))
@@ -67,7 +70,14 @@ def load_img(f, **kwargs):
     if isinstance(f, list):
         return load_fits(f[0], **kwargs)
     with fits.open(f) as g:
-        return load_fits(g[0], **kwargs)
+        img = load_fits(g[0], **kwargs)
+        if float(img.meta.dict()['time']) == 0:
+            if len(f.split('/')[-1].split('_')) > 8:
+                time = float(f.split('/')[-1].split('_')[8][1:])
+            else:
+                time = float(f.split('/')[-1].split('_')[-1].split('.')[0])
+            img.set_time(time)
+        return img
 
 def load_summ(f, **kwargs):
     raise NotImplementedError("Summary loading of FITS not implemented")

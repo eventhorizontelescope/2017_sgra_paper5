@@ -63,6 +63,9 @@ class ImageMeta:
             'height': self.height.to(self.rg ).value,
         }
 
+    def set_time(self, time):
+        self.time = du(time,   self.tg)
+
 
 class Image(u.SpecificTypeQuantity):
 
@@ -84,6 +87,9 @@ class Image(u.SpecificTypeQuantity):
         self = super().__new__(cls, img, unit, dtype, copy)
         self.meta = meta
         return self
+
+    def set_time(self, time):
+        self.meta.set_time(time)
 
     @cached_property
     def Fnu(self):
