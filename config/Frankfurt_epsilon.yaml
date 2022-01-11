@@ -1,0 +1,8 @@
+src_fmt:
+  model/Frankfurt_epsilon/eps{eps}/{mag}/a{aspin}_i{inc:d}_R{Rhigh:d}/SgrA_{no}_a{no2}_i{no3}_Rh{no4}_Rl{no5}_sigc{no6}_snorm{no7}_t{snapshot:d}_f{no8}.fits
+dst_fmt:
+  cache/Frankfurt_epsilon/eps{eps}/{mag}_a{aspin}_i{inc:d}/gt_Rh{Rhigh:d}_230GHz.h5
+img_fmt:
+  fits
+order:
+  - snapshot
