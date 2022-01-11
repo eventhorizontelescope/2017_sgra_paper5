@@ -1,0 +1,23 @@
+name: sgra
+
+channels:
+ - conda-forge
+
+dependencies:
+ # Required
+ - astropy
+ - click
+ - h5py
+ - matplotlib
+ - numpy
+ - pandas
+ - parse
+ - ruamel.yaml
+ - tqdm
+ # My additions
+ - pip
+ - psutil
+ - scipy
+ - ipykernel
+ - ipympl
+ - ipywidgets
