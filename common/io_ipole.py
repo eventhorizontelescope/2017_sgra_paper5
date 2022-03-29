@@ -60,7 +60,7 @@ def load_summ(f, **kwargs):
         img   = load_img(h, **kwargs)
     return Mdot, Ladv, nuLnu, Ftot, img
 
-def load_mov(fs, **kwargs):
+def load_mov(fs, mean=False, **kwargs):
     if isinstance(fs, str):
         fs = [fs]
 
@@ -74,4 +74,13 @@ def load_mov(fs, **kwargs):
 
     meta = img.meta
     meta.time = units.Quantity(times)
+
+    #from scipy import ndimage
+    #import numpy as np
+    #imgs = [ndimage.rotate(im, 140, reshape=False) for im in imgs]
+
+    if mean:
+        import numpy as np
+        imgs = np.mean(imgs, axis=0)
+
     return d.Image(imgs, meta=meta)
