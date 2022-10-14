@@ -18,7 +18,6 @@
 
 import numpy as np
 from .convolveSquareImage import *
-import pdb
 
 def moments(img, width, height, FWHM=False):
 
@@ -68,7 +67,7 @@ def moments(img, width, height, FWHM=False):
 
 def unresolvedFractionalPolarizations(img):
 
-    if img.shape[2] <= 4:
+    if img.shape[2] < 4:
         #Return nan if there is no polarization data, which we check by just looking at the number of 2d arrays
         return np.nan, np.nan
 
@@ -80,7 +79,7 @@ def unresolvedFractionalPolarizations(img):
 
 def resolvedFractionalPolarizations(img, blurring_fwhm_muas=20.0):
 
-    if img.shape[2] <= 4:
+    if img.shape[2] < 4:
         #Return nan if there is no polarization data, which we check by just looking at the number of 2d arrays
         return np.nan, np.nan
 
@@ -92,7 +91,7 @@ def resolvedFractionalPolarizations(img, blurring_fwhm_muas=20.0):
 def computeBetaCoefficient(img, m=2, r_min=0, r_max=np.inf, norm_in_int=False, norm_with_StokesI=True):
     """Based on pmodes.py by Daniel Palumbo"""
 
-    if img.shape[2] <= 4:
+    if img.shape[2] < 3:
         #Return nan if there is no polarization data, which we check by just looking at the number of 2d arrays
         return np.nan, np.nan
 
@@ -161,7 +160,6 @@ def computeOpticalDepth(img):
     """Intensity-weighted average optical depth"""
 
     I = img.value[:,:,0]
-    pdb.set_trace()
     tau = img.tauI
     return np.sum(tau * I) / np.sum(I)
 
