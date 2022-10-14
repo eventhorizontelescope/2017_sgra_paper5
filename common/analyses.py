@@ -20,6 +20,7 @@ import numpy as np
 from .convolveSquareImage import *
 
 def moments(img, width, height, FWHM=False):
+    """Compute image moments"""
 
     from math import pi, sqrt, log, atan2
 
@@ -66,6 +67,7 @@ def moments(img, width, height, FWHM=False):
     )
 
 def unresolvedFractionalPolarizations(img):
+    """Compute spatially unresolved linear and circular polarization fractions"""
 
     if img.shape[2] < 4:
         #Return nan if there is no polarization data, which we check by just looking at the number of 2d arrays
@@ -78,6 +80,7 @@ def unresolvedFractionalPolarizations(img):
     return unresolvedLinear/totalFlux, unresolvedCircular/totalFlux
 
 def resolvedFractionalPolarizations(img, blurring_fwhm_muas=20.0):
+    """Compute spatially resolved linear and circular polarization fractions, after blurring to some scale, 20 muas by default."""
 
     if img.shape[2] < 4:
         #Return nan if there is no polarization data, which we check by just looking at the number of 2d arrays
@@ -89,7 +92,9 @@ def resolvedFractionalPolarizations(img, blurring_fwhm_muas=20.0):
     return np.nanmean(resolvedLinear/blurredStokesImages[0]), np.nanmean(blurredStokesImages[3]/blurredStokesImages[0])
 
 def computeBetaCoefficient(img, m=2, r_min=0, r_max=np.inf, norm_in_int=False, norm_with_StokesI=True):
-    """Based on pmodes.py by Daniel Palumbo"""
+    """
+    Compute the amplitude and phase of the complex beta coefficient of linear polarization described in Palumbo, Wong, and Prather 2020.  Code based on pmodes.py by Daniel Palumbo.
+    """
 
     if img.shape[2] < 3:
         #Return nan if there is no polarization data, which we check by just looking at the number of 2d arrays
@@ -164,6 +169,7 @@ def computeOpticalDepth(img):
     return np.sum(tau * I) / np.sum(I)
 
 def computeFaradayDepth(img):
+    """Intensity-weighted averaged Faraday rotation depth"""
 
     tauF = img.tauF
     if tauF is None:
