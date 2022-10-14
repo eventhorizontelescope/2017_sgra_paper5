@@ -88,12 +88,13 @@ def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
             moments = mm.moments(img.value, *img.fov.value, FWHM=True)
             unresolvedPolarizationFractions = mm.unresolvedFractionalPolarizations(img)
             resolvedPolarizationFractions = mm.resolvedFractionalPolarizations(img)
+            beta2Coefficient = mm.computeBetaCoefficient(img)
             time    = img.meta.time.value
             time_hr = img.meta.time.to(u.hr).value
             tab.append([
                 time, time_hr,
                 Ladv, Mdot, nuLnu, Ftot, np.min(img.value), np.max(img.value),
-                *moments, *unresolvedPolarizationFractions, *resolvedPolarizationFractions])
+                *moments, *unresolvedPolarizationFractions, *resolvedPolarizationFractions, *beta2Coefficient])
 
         # Turn list of of list into pandas data frame
         tab = pd.DataFrame(tab, columns=[
@@ -101,7 +102,7 @@ def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
             'Mdot', 'Ladv', 'nuLnu', 'Ftot',
             'Imin', 'Imax', 'Imean',
             'alpha0', 'beta0', 'major_FWHM', 'minor_FWHM', 'PA', 
-            'mnet', 'vnet', 'mavg', 'vavg']
+            'mnet', 'vnet', 'mavg', 'vavg', 'beta_2_amplitude', 'beta_2_phase']
         )
 
         # Only touch file system if everything works

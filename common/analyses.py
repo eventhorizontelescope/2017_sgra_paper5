@@ -71,20 +71,88 @@ def unresolvedFractionalPolarizations(img):
     if img.shape[2] <= 4:
         #Return nan if there is no polarization data, which we check by just looking at the number of 2d arrays
         return np.nan, np.nan
-    else:
-        #Otherwise, compute unresolved linear and circular polarization fractions
-        totalFlux = np.sum(img[:,:,0])
-        unresolvedLinear = np.sqrt(np.sum(img[:,:,1])**2 + np.sum(img[:,:,2])**2)
-        unresolvedCircular = np.sum(img[:,:,3])
-        return unresolvedLinear/totalFlux, unresolvedCircular/totalFlux
+
+    #Otherwise, compute unresolved linear and circular polarization fractions
+    totalFlux = np.sum(img[:,:,0])
+    unresolvedLinear = np.sqrt(np.sum(img[:,:,1])**2 + np.sum(img[:,:,2])**2)
+    unresolvedCircular = np.sum(img[:,:,3])
+    return unresolvedLinear/totalFlux, unresolvedCircular/totalFlux
 
 def resolvedFractionalPolarizations(img, blurring_fwhm_muas=20.0):
 
     if img.shape[2] <= 4:
         #Return nan if there is no polarization data, which we check by just looking at the number of 2d arrays
         return np.nan, np.nan
+
+    assert np.isclose(np.abs(img.fov.value[0]), np.abs(img.fov.value[1]))
+    blurredStokesImages = [convolveSquareImage(img.value[:,:,stokes], np.abs(img.fov.value[0]), blurring_fwhm_muas) for stokes in range(4)]
+    resolvedLinear = np.sqrt(blurredStokesImages[1]**2 + blurredStokesImages[2]**2)
+    return np.nanmean(resolvedLinear/blurredStokesImages[0]), np.nanmean(blurredStokesImages[3]/blurredStokesImages[0])
+
+def computeBetaCoefficient(img, m=2, r_min=0, r_max=np.inf, norm_in_int=False, norm_with_StokesI=True):
+    """Based on pmodes.py by Daniel Palumbo"""
+
+    if img.shape[2] <= 4:
+        #Return nan if there is no polarization data, which we check by just looking at the number of 2d arrays
+        return np.nan, np.nan
+
+    assert np.isclose(np.abs(img.fov.value[0]), np.abs(img.fov.value[1]))
+    fov_muas = np.abs(img.fov.value[0])
+    iarr = np.flip(np.transpose(img.value[:,:,0], (1,0)), axis=0)
+    qarr = np.flip(np.transpose(img.value[:,:,1], (1,0)), axis=0)
+    uarr = np.flip(np.transpose(img.value[:,:,2], (1,0)), axis=0)
+    assert iarr.shape[0] == iarr.shape[1]
+    npix = iarr.shape[0]
+
+    parr = qarr + 1j*uarr
+    normparr = np.abs(parr)
+    marr = parr/iarr
+    phatarr = parr/normparr
+    area = (r_max*r_max - r_min*r_min) * np.pi
+    pxi = (np.arange(npix)-0.01)/npix-0.5
+    pxj = np.arange(npix)/npix-0.5
+    mui = pxi*fov_muas
+    muj = pxj*fov_muas
+    MUI,MUJ = np.meshgrid(mui,muj)
+    MUDISTS = np.sqrt(np.power(MUI,2.)+np.power(MUJ,2.))
+
+    # get angles measured East of North
+    PXI,PXJ = np.meshgrid(pxi,pxj)
+    angles = np.arctan2(-PXJ,PXI) - np.pi/2.
+    angles[angles<0.] += 2.*np.pi
+
+    # get flux in annulus
+    tf = iarr [ (MUDISTS<=r_max) & (MUDISTS>=r_min) ].sum()
+
+    # get total polarized flux in annulus
+    pf = normparr [ (MUDISTS<=r_max) & (MUDISTS>=r_min) ].sum()
+
+    #get number of pixels in annulus
+    npix = iarr [ (MUDISTS<=r_max) & (MUDISTS>=r_min) ].size
+
+    #get number of pixels in annulus with flux >= some % of the peak flux
+    ann_iarr = iarr [ (MUDISTS<=r_max) & (MUDISTS>=r_min) ]
+    peak = np.max(ann_iarr)
+    num_above5 = ann_iarr[ann_iarr > .05* peak].size
+    num_above10 = ann_iarr[ann_iarr > .1* peak].size
+
+    # compute betas
+    qbasis = np.cos(-angles*m)
+    ubasis = np.sin(-angles*m)
+    pbasis = qbasis + 1.j*ubasis
+    if norm_in_int:
+        if norm_with_StokesI:
+            prod = marr * pbasis
+        else:
+            prod = phatarr * pbasis
+        coeff = prod[ (MUDISTS <= r_max) & (MUDISTS >= r_min) ].sum()
+        coeff /= npix
     else:
-        assert np.isclose(np.abs(img.fov.value[0]), np.abs(img.fov.value[1]))
-        blurredStokesImages = [convolveSquareImage(img.value[:,:,stokes], np.abs(img.fov.value[0]), blurring_fwhm_muas) for stokes in range(4)]
-        resolvedLinear = np.sqrt(blurredStokesImages[1]**2 + blurredStokesImages[2]**2)
-        return np.nanmean(resolvedLinear/blurredStokesImages[0]), np.nanmean(blurredStokesImages[3]/blurredStokesImages[0])
+        prod = parr * pbasis
+        coeff = prod[ (MUDISTS<=r_max) & (MUDISTS>=r_min) ].sum()
+        if norm_with_StokesI:
+            coeff /= tf
+        else:
+            coeff /= pf
+
+    return np.abs(coeff), np.angle(coeff) * 180.0 / np.pi
