@@ -40,6 +40,8 @@ def load_hdf5(f, pol=True, **kwargs):
 	#Add tau as well
 	img = np.vstack([img, f['tau'][()]])
 
+	#Note that no flips or transposes have been made.  This may need to occur in analysis scripts.
+
     MBH  = (get(u, 'L_unit') * units.cm).to(units.M_sun, equivalencies=s.GR)
     dist = get(h, 'dsource') * units.cm
     freq = get(h, 'freqcgs') * units.Hz

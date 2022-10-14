@@ -22,19 +22,22 @@ def moments(img, width, height, FWHM=False):
 
     from math import pi, sqrt, log, atan2
 
-    f  = sqrt(8 * log(2)) if FWHM else 1
-    s  = np.sum(img)
-    w  = width  * ((np.arange(img.shape[-2]) + 0.5) / img.shape[-2] - 0.5)
-    h  = height * ((np.arange(img.shape[-1]) + 0.5) / img.shape[-1] - 0.5)
+	#img contains many parameters.  Only look at Stokes I.
+	StokesI = img[:,:,0]
 
-    w0 = np.sum(w * np.sum(img, axis=-1)) / s # axis -2, so sum -1 first
-    h0 = np.sum(h * np.sum(img, axis=-2)) / s # axis -1, so sum -2 first
+    f  = sqrt(8 * log(2)) if FWHM else 1
+    s  = np.sum(StokesI)
+    w  = width  * ((np.arange(StokesI.shape[-2]) + 0.5) / StokesI.shape[-2] - 0.5)
+    h  = height * ((np.arange(StokesI.shape[-1]) + 0.5) / StokesI.shape[-1] - 0.5)
+
+    w0 = np.sum(w * np.sum(StokesI, axis=-1)) / s # axis -2, so sum -1 first
+    h0 = np.sum(h * np.sum(StokesI, axis=-2)) / s # axis -1, so sum -2 first
     w -= w0
     h -= h0
 
-    ww = np.sum(w * w * np.sum(img, axis=-1)) / s
-    hh = np.sum(h * h * np.sum(img, axis=-2)) / s
-    wh = np.sum(w[...,:,np.newaxis] * h[...,np.newaxis,:] * img) / s
+    ww = np.sum(w * w * np.sum(StokesI, axis=-1)) / s
+    hh = np.sum(h * h * np.sum(StokesI, axis=-2)) / s
+    wh = np.sum(w[...,:,np.newaxis] * h[...,np.newaxis,:] * StokesI) / s
 
     cc = 0.5 * (ww + hh)
     dd = 0.5 * (ww - hh)
@@ -43,17 +46,17 @@ def moments(img, width, height, FWHM=False):
     try:
         major = sqrt(cc + D)
     except ValueError:
-        print('Warning! img has negative value')
+        print('Warning! StokesI has negative value')
         major = float('nan')
 
     try:
         minor = sqrt(cc - D)
     except ValueError:
-        print('Warning! img has negative value')
+        print('Warning! StokesI has negative value')
         minor = float('nan')
 
     return (
-        s / img.size,
+        s / StokesI.size,
         w0,
         h0,
         major * f,
