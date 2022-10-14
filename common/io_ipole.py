@@ -38,7 +38,7 @@ def load_hdf5(f, pol=True, **kwargs):
 		img = np.atleast_3d(f['unpol'][()])
 
 	#Add tau as well
-	img = np.vstack([img, f['tau'][()]])
+	img = np.concatenate([img, np.atleast_3d(f['tau'][()])])
 
 	#Note that no flips or transposes have been made.  This may need to occur in analysis scripts.
 
