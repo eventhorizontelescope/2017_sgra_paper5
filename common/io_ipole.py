@@ -31,7 +31,15 @@ def load_hdf5(f, pol=True, **kwargs):
     c = h['camera']
     u = h['units']
 
-    img  = f['pol'][:,:,0] if pol else f['unpol'][:,:]
+	if pol:
+		#nx ny Stokes+Tau_F
+		img  = f['pol'][()]
+	else:
+		img = np.atleast_3d(f['unpol'][()])
+
+	#Add tau as well
+	img = np.vstack([img, f['tau'][()]])
+
     MBH  = (get(u, 'L_unit') * units.cm).to(units.M_sun, equivalencies=s.GR)
     dist = get(h, 'dsource') * units.cm
     freq = get(h, 'freqcgs') * units.Hz
