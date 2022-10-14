@@ -161,15 +161,16 @@ def computeOpticalDepth(img):
     """Intensity-weighted average optical depth"""
 
     I = img.value[:,:,0]
-    tau = img.value[:,:,-1]
+    pdb.set_trace()
+    tau = img.tauI
     return np.sum(tau * I) / np.sum(I)
 
 def computeFaradayDepth(img):
-    if img.shape[2] <= 4:
-        #Return nan if there is no polarization data, which we check by just looking at the number of 2d arrays
+
+    tauF = img.tauF
+    if tauF is None:
         return np.nan
 
     I = img.value[:,:,0]
-    tauF = img.value[:,:,-2]
     return np.sum(tauF * I) / np.sum(I)
 

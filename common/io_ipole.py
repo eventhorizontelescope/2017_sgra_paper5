@@ -34,12 +34,13 @@ def load_hdf5(f, pol=True, **kwargs):
 
     if pol:
         #nx ny Stokes+Tau_F
-        img  = f['pol'][()]
+        img  = f['pol'][:,:,0:4]
+        tauF = f['pol'][:,:,4]
     else:
         img = np.atleast_3d(f['unpol'][()])
+        tauF = None
 
-    #Add tau as well
-    img = np.concatenate([img, np.atleast_3d(f['tau'][()])], axis=-1)
+    tauI = f['tau'][()]
 
     #Note that no flips or transposes have been made.  This may need to occur in analysis scripts.
 
@@ -54,7 +55,7 @@ def load_hdf5(f, pol=True, **kwargs):
     except:
         height = width
     # print(MBH, dist, freq, time, width, height)
-    return d.Image(img, MBH, dist, freq, time, width, height, **kwargs)
+    return d.Image(img, MBH, dist, freq, time, width, height, tauI, tauF, **kwargs)
 
 def load_img(f, **kwargs):
     if isinstance(f, h5py.File):
