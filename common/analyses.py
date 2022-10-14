@@ -22,8 +22,8 @@ def moments(img, width, height, FWHM=False):
 
     from math import pi, sqrt, log, atan2
 
-	#img contains many parameters.  Only look at Stokes I.
-	StokesI = img[:,:,0]
+    #img contains many parameters.  Only look at Stokes I.
+    StokesI = img[:,:,0]
 
     f  = sqrt(8 * log(2)) if FWHM else 1
     s  = np.sum(StokesI)
@@ -63,3 +63,15 @@ def moments(img, width, height, FWHM=False):
         minor * f,
         atan2(wh, D - dd) * 180 / pi,
     )
+
+def unresolvedFractionalPolarizations(img):
+
+    if img.shape[2] <= 4:
+        #Return nan if there is no polarization data, which we check by just looking at the number of 2d arrays
+        return np.nan, np.nan
+    else:
+        #Otherwise, compute unresolved linear and circular polarization fractions
+        totalFlux = np.sum(img[:,:,0])
+        unresolvedLinear = np.sqrt(np.sum(img[:,:,1])**2 + np.sum(img[:,:,2])**2)
+        unresolvedCircular = np.sum(img[:,:,3])
+        return unresolvedLinear/totalFlux, unresolvedCircular/totalFlux

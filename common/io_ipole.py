@@ -21,6 +21,7 @@ from astropy import units
 
 from . import scale as s
 from . import dalt  as d
+import numpy as np
 
 def load_hdf5(f, pol=True, **kwargs):
 
@@ -31,16 +32,16 @@ def load_hdf5(f, pol=True, **kwargs):
     c = h['camera']
     u = h['units']
 
-	if pol:
-		#nx ny Stokes+Tau_F
-		img  = f['pol'][()]
-	else:
-		img = np.atleast_3d(f['unpol'][()])
+    if pol:
+        #nx ny Stokes+Tau_F
+        img  = f['pol'][()]
+    else:
+        img = np.atleast_3d(f['unpol'][()])
 
-	#Add tau as well
-	img = np.concatenate([img, np.atleast_3d(f['tau'][()])], axis=-1)
+    #Add tau as well
+    img = np.concatenate([img, np.atleast_3d(f['tau'][()])], axis=-1)
 
-	#Note that no flips or transposes have been made.  This may need to occur in analysis scripts.
+    #Note that no flips or transposes have been made.  This may need to occur in analysis scripts.
 
     MBH  = (get(u, 'L_unit') * units.cm).to(units.M_sun, equivalencies=s.GR)
     dist = get(h, 'dsource') * units.cm
