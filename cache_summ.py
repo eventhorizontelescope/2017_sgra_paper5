@@ -30,6 +30,7 @@ from yaml    import safe_load
 
 from common import hallmark as hm
 from common import analyses as mm
+import pdb
 
 def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
                params=None, order=['snapshot'], **kwargs):
@@ -56,6 +57,17 @@ def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
     # Main loop for generating multiple summary tables
     for values in product(*params.values()):
         criteria = {p:v for p, v in zip(params.keys(), values)}
+
+        '''
+        #BHAC files have a strange way of specifying spin: '+15o16' == 15/16.  Catch these.
+        spinString = criteria['spin']
+        try:
+            spinFloat = float(spinString)
+        except:
+            spinStringSplit = spinString.split('o')
+            spinFloat = float(spinStringSplit[0]) / float(spinStringSplit[1])
+        criteria['spin'] = str(spinFloat)
+        '''
 
         # Check output file
         dst = Path(dst_fmt.format(**criteria))

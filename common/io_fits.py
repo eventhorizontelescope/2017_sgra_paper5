@@ -20,6 +20,7 @@
 import numpy as np
 from astropy import units
 from astropy.io import fits
+import pdb
 
 from . import scale as s
 from . import dalt  as d
@@ -77,16 +78,29 @@ def load_img(f, **kwargs):
         return load_fits(f[0], **kwargs)
     with fits.open(f) as g:
         img = load_fits(g[0], **kwargs)
+
         if float(img.meta.dict()['time']) == 0:
+            #ARR:  This part must have only applied to some specific file format.  Replacing with something else.
+            '''
             if len(f.split('/')[-1].split('_')) > 8:
                 time = float(f.split('/')[-1].split('_')[8][1:])
             else:
                 time = float(f.split('/')[-1].split('_')[-1].split('.')[0])
+            '''
+            time = float(f.split('/')[-1].split('_')[1][1:])
             img.set_time(time)
         return img
 
 def load_summ(f, **kwargs):
-    raise NotImplementedError("Summary loading of FITS not implemented")
+
+	"""Most info will be missing.  Returning nan for those."""
+	
+	img = load_img(f, **kwargs)
+	Ftot = np.nansum(img[:,:,0])
+	Mdot = np.nan
+	Ladv = np.nan
+	nuLnu = np.nan
+	return Mdot, Ladv, nuLnu, Ftot, img
 
 def load_mov(fs, **kwargs):
     if isinstance(fs, str):

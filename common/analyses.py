@@ -164,8 +164,10 @@ def computeBetaCoefficient(img, m=2, r_min=0, r_max=np.inf, norm_in_int=False, n
 def computeOpticalDepth(img):
     """Intensity-weighted average optical depth"""
 
-    I = img.value[:,:,0]
     tau = img.tauI
+    if tau is None:
+        return np.nan
+    I = img.value[:,:,0]
     return np.sum(tau * I) / np.sum(I)
 
 def computeFaradayDepth(img):
