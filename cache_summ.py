@@ -30,6 +30,7 @@ from yaml    import safe_load
 
 from common import hallmark as hm
 from common import analyses as mm
+import pdb
 
 def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
                params=None, order=['snapshot'], **kwargs):
@@ -56,6 +57,17 @@ def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
     # Main loop for generating multiple summary tables
     for values in product(*params.values()):
         criteria = {p:v for p, v in zip(params.keys(), values)}
+
+        '''
+        #BHAC files have a strange way of specifying spin: '+15o16' == 15/16.  Catch these.
+        spinString = criteria['spin']
+        try:
+            spinFloat = float(spinString)
+        except:
+            spinStringSplit = spinString.split('o')
+            spinFloat = float(spinStringSplit[0]) / float(spinStringSplit[1])
+        criteria['spin'] = str(spinFloat)
+        '''
 
         # Check output file
         dst = Path(dst_fmt.format(**criteria))
@@ -86,19 +98,25 @@ def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
             Mdot, Ladv, nuLnu, Ftot, img = io.load_summ(p)
 
             moments = mm.moments(img.value, *img.fov.value, FWHM=True)
+            unresolvedPolarizationFractions = mm.unresolvedFractionalPolarizations(img)
+            resolvedPolarizationFractions = mm.resolvedFractionalPolarizations(img)
+            beta2Coefficient = mm.computeBetaCoefficient(img)
+            opticalDepth = mm.computeOpticalDepth(img)
+            faradayDepth = mm.computeFaradayDepth(img)
             time    = img.meta.time.value
             time_hr = img.meta.time.to(u.hr).value
             tab.append([
                 time, time_hr,
                 Ladv, Mdot, nuLnu, Ftot, np.min(img.value), np.max(img.value),
-                *moments])
+                *moments, *unresolvedPolarizationFractions, *resolvedPolarizationFractions, *beta2Coefficient, opticalDepth, faradayDepth])
 
         # Turn list of of list into pandas data frame
         tab = pd.DataFrame(tab, columns=[
             'time', 'time_hr',
             'Mdot', 'Ladv', 'nuLnu', 'Ftot',
             'Imin', 'Imax', 'Imean',
-            'alpha0', 'beta0', 'major_FWHM', 'minor_FWHM', 'PA']
+            'alpha0', 'beta0', 'major_FWHM', 'minor_FWHM', 'PA', 
+            'mnet', 'vnet', 'mavg', 'vavg', 'beta_2_amplitude', 'beta_2_phase', 'tauI', 'tauF']
         )
 
         # Only touch file system if everything works
