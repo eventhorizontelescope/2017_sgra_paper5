@@ -74,9 +74,9 @@ def unresolvedFractionalPolarizations(img):
         return np.nan, np.nan
 
     #Otherwise, compute unresolved linear and circular polarization fractions
-    totalFlux = np.sum(img[:,:,0])
-    unresolvedLinear = np.sqrt(np.sum(img[:,:,1])**2 + np.sum(img[:,:,2])**2)
-    unresolvedCircular = np.sum(img[:,:,3])
+    totalFlux = np.nansum(img[:,:,0])
+    unresolvedLinear = np.sqrt(np.nansum(img[:,:,1])**2 + np.nansum(img[:,:,2])**2)
+    unresolvedCircular = np.nansum(img[:,:,3])
     return unresolvedLinear/totalFlux, unresolvedCircular/totalFlux
 
 def resolvedFractionalPolarizations(img, blurring_fwhm_muas=20.0):
@@ -89,7 +89,10 @@ def resolvedFractionalPolarizations(img, blurring_fwhm_muas=20.0):
     assert np.isclose(np.abs(img.fov.value[0]), np.abs(img.fov.value[1]))
     blurredStokesImages = [convolveSquareImage(img.value[:,:,stokes], np.abs(img.fov.value[0]), blurring_fwhm_muas) for stokes in range(4)]
     resolvedLinear = np.sqrt(blurredStokesImages[1]**2 + blurredStokesImages[2]**2)
-    return np.nanmean(resolvedLinear/blurredStokesImages[0]), np.nanmean(blurredStokesImages[3]/blurredStokesImages[0])
+    resolvedLinearFraction = resolvedLinear/blurredStokesImages[0]
+    resolvedCircularFraction = np.abs(blurredStokesImages[3])/blurredStokesImages[0]
+
+    return np.mean(resolvedLinearFraction[np.isfinite(resolvedLinearFraction)]), np.mean(resolvedCircularFraction[np.isfinite(resolvedCircularFraction)])
 
 def computeBetaCoefficient(img, m=2, r_min=0, r_max=np.inf, norm_in_int=False, norm_with_StokesI=True):
     """
@@ -168,7 +171,8 @@ def computeOpticalDepth(img):
     if tau is None:
         return np.nan
     I = img.value[:,:,0]
-    return np.sum(tau * I) / np.sum(I)
+    finite = np.isfinite(tau) & np.isfinite(I)
+    return np.sum(tau[finite] * I[finite]) / np.sum(I[finite])
 
 def computeFaradayDepth(img):
     """Intensity-weighted averaged Faraday rotation depth"""
@@ -178,5 +182,6 @@ def computeFaradayDepth(img):
         return np.nan
 
     I = img.value[:,:,0]
-    return np.sum(tauF * I) / np.sum(I)
+    finite = np.isfinite(tauF) & np.isfinite(I)
+    return np.sum(tauF[finite] * I[finite]) / np.sum(I[finite])
 

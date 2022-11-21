@@ -59,13 +59,20 @@ def load_fits(f, pol=True, **kwargs):
 
     scale = (width * L_unit / nx) * (height * L_unit / ny) / (dsource * dsource) / 1e-23
 
+    #TODO:  Do these transposes make sense?
     if len(f.data.shape) == 2:
         img  =  f.data.T / scale
     elif len(f.data.shape) == 3:
-        img = np.transpose(f.data, (2,1,0)) / scale
-    tauI = None
-    tauF = None
-
+        img = np.transpose(f.data[:5,:,:], (2,1,0)) / scale
+        try:
+            tauI = f.data[4,:,:].T / scale
+        except IndexError:
+            tauI = None
+        try:
+            tauF = f.data[5,:,:].T / scale
+        except IndexError:
+            tauF = None
+        
     #print("L_unit: {}".format(L_unit))
     #print("FOV in deg: {} {} M: {} x {}".format(nx*h['CDELT1'], ny*h['CDELT2'], width, height))
     #print("Scale: {}".format(scale))
@@ -93,14 +100,14 @@ def load_img(f, **kwargs):
 
 def load_summ(f, **kwargs):
 
-	"""Most info will be missing.  Returning nan for those."""
-	
-	img = load_img(f, **kwargs)
-	Ftot = np.nansum(img[:,:,0])
-	Mdot = np.nan
-	Ladv = np.nan
-	nuLnu = np.nan
-	return Mdot, Ladv, nuLnu, Ftot, img
+    """Most info will be missing.  Returning nan for those."""
+    
+    img = load_img(f, **kwargs)
+    Ftot = np.nansum(img[:,:,0])
+    Mdot = np.nan
+    Ladv = np.nan
+    nuLnu = np.nan
+    return Mdot, Ladv, nuLnu, Ftot, img
 
 def load_mov(fs, **kwargs):
     if isinstance(fs, str):
