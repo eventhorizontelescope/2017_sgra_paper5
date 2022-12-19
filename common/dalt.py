@@ -34,7 +34,7 @@ class ImageMeta:
     def __init__(self,
                  mass=None, dist=None, freq=None,
                  time=None, width=None, height=None, 
-                 tauI=None, tauF=None):
+                 tauI=None, tauF=None, scale=None):
 
         self.mass   = du(mass, u.M_sun )
         self.dist   = du(dist, u.parsec)
@@ -51,6 +51,7 @@ class ImageMeta:
 
         self.tauI = tauI
         self.tauF = tauF
+        self.scale = scale
 
         self.geom = [ # geometry equivalencies
             (self.rg, u.radian, lambda L: L / self.dist.to(self.rg),
@@ -66,7 +67,8 @@ class ImageMeta:
             'width':  self.width .to(self.rg ).value,
             'height': self.height.to(self.rg ).value,
             'tauI':   self.tauI,
-            'tauF':   self.tauF
+            'tauF':   self.tauF,
+            'scale':  self.scale
         }
 
     def set_time(self, time):
@@ -125,6 +127,10 @@ class Image(u.SpecificTypeQuantity):
     @property
     def tauF(self):
         return self.meta.tauF
+
+    @property
+    def scale(self):
+        return self.meta.scale
 
     @property
     def extent(self):

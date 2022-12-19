@@ -41,9 +41,9 @@ def load_hdf5(f, pol=True, **kwargs):
         tauF = None
 
     tauI = f['tau'][()]
+    scale = f['header']['scale'][()]
 
     #Note that no flips or transposes have been made.  This may need to occur in analysis scripts.
-
     MBH  = (get(u, 'L_unit') * units.cm).to(units.M_sun, equivalencies=s.GR)
     dist = get(h, 'dsource') * units.cm
     freq = get(h, 'freqcgs') * units.Hz
@@ -55,7 +55,7 @@ def load_hdf5(f, pol=True, **kwargs):
     except:
         height = width
     # print(MBH, dist, freq, time, width, height)
-    return d.Image(img, MBH, dist, freq, time, width, height, tauI, tauF, **kwargs)
+    return d.Image(img, MBH, dist, freq, time, width, height, tauI, tauF, scale, **kwargs)
 
 def load_img(f, **kwargs):
     if isinstance(f, h5py.File):

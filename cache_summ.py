@@ -32,8 +32,16 @@ from common import hallmark as hm
 from common import analyses as mm
 import pdb
 
-def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
-               params=None, order=['snapshot'], **kwargs):
+def cache_summ(src_fmt, dst_fmt, 
+               params=None, order=['snapshot'], FWHM=True, **kwargs):
+
+    file_ending = src_fmt.split('.')[-1]
+    if file_ending == 'fits':
+        img_fmt = 'fits'
+    elif file_ending == 'h5':
+        img_fmt = 'ipole'
+    else:
+        raise ValueError("You are asking for neither h5 nor fits files, which are not implemented.")
 
     io = import_module('common.io_' + img_fmt)
 
@@ -97,7 +105,7 @@ def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
         for p in tqdm(sel.path, desc=desc):
             Mdot, Ladv, nuLnu, Ftot, img = io.load_summ(p)
 
-            moments = mm.moments(img.value, *img.fov.value, FWHM=True)
+            moments = mm.moments(img.value, *img.fov.value, FWHM=FWHM)
             unresolvedPolarizationFractions = mm.unresolvedFractionalPolarizations(img)
             resolvedPolarizationFractions = mm.resolvedFractionalPolarizations(img)
             beta2Coefficient = mm.computeBetaCoefficient(img)
@@ -106,13 +114,13 @@ def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
             time    = img.meta.time.value
             time_hr = img.meta.time.to(u.hr).value
             tab.append([
-                time, time_hr,
+                p, time, time_hr,
                 Ladv, Mdot, nuLnu, Ftot, np.min(img.value), np.max(img.value),
                 *moments, *unresolvedPolarizationFractions, *resolvedPolarizationFractions, *beta2Coefficient, opticalDepth, faradayDepth])
 
         # Turn list of of list into pandas data frame
         tab = pd.DataFrame(tab, columns=[
-            'time', 'time_hr',
+            'file_path', 'time', 'time_hr',
             'Mdot', 'Ladv', 'nuLnu', 'Ftot',
             'Imin', 'Imax', 'Imean',
             'alpha0', 'beta0', 'major_FWHM', 'minor_FWHM', 'PA', 

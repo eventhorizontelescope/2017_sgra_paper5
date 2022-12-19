@@ -52,16 +52,13 @@ def load_fits(f, pol=True, **kwargs):
 
     nx = h['NAXIS1']
     ny = h['NAXIS2']
-    # FOV/px ~ CDELT appears to be in degrees
     fov_to_d = dsource / L_unit / 2.06265e11 # latter is muas_per_rad
     width = abs(nx*h['CDELT1']*3600*1e6*fov_to_d)
     height = abs(ny*h['CDELT2']*3600*1e6*fov_to_d)
-
     scale = (width * L_unit / nx) * (height * L_unit / ny) / (dsource * dsource) / 1e-23
 
-    #TODO:  Do these transposes make sense?
     if len(f.data.shape) == 2:
-        img  =  f.data.T / scale
+        img = f.data / scale
     elif len(f.data.shape) == 3:
         img = np.transpose(f.data[:5,:,:], (2,1,0)) / scale
         try:
@@ -73,12 +70,7 @@ def load_fits(f, pol=True, **kwargs):
         except IndexError:
             tauF = None
         
-    #print("L_unit: {}".format(L_unit))
-    #print("FOV in deg: {} {} M: {} x {}".format(nx*h['CDELT1'], ny*h['CDELT2'], width, height))
-    #print("Scale: {}".format(scale))
-    #print("Total flux in image: {} header: {}".format(np.sum(img*scale), h['STOT']))
-
-    return d.Image(img, MBH, dist, freq, time, width, height, tauI, tauF, **kwargs)
+    return d.Image(img, MBH, dist, freq, time, width, height, tauI, tauF, scale, **kwargs)
 
 def load_img(f, **kwargs):
     if isinstance(f, list):
@@ -103,7 +95,7 @@ def load_summ(f, **kwargs):
     """Most info will be missing.  Returning nan for those."""
     
     img = load_img(f, **kwargs)
-    Ftot = np.nansum(img[:,:,0])
+    Ftot = np.nansum(img[:,:,0]).value * img.scale
     Mdot = np.nan
     Ladv = np.nan
     nuLnu = np.nan
