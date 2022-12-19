@@ -66,16 +66,9 @@ def cache_summ(src_fmt, dst_fmt,
     for values in product(*params.values()):
         criteria = {p:v for p, v in zip(params.keys(), values)}
 
-        '''
-        #BHAC files have a strange way of specifying spin: '+15o16' == 15/16.  Catch these.
-        spinString = criteria['spin']
-        try:
-            spinFloat = float(spinString)
-        except:
-            spinStringSplit = spinString.split('o')
-            spinFloat = float(spinStringSplit[0]) / float(spinStringSplit[1])
-        criteria['spin'] = str(spinFloat)
-        '''
+        if not (criteria['mag'] in ['MAD', 'SANE']):
+            #This is helping me catch folders representing old runs.  Skip them.
+            continue
 
         # Check output file
         dst = Path(dst_fmt.format(**criteria))

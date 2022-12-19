@@ -25,7 +25,7 @@ import pdb
 from . import scale as s
 from . import dalt  as d
 
-def load_fits(f, pol=True, **kwargs):
+def load_fits(f, time_scaling=10, **kwargs):
     """Load the contents of a fits file just like an ipole image.
     Requires just the astropy.io.fits.hdu.image.PrimaryHDU object,
     i.e. fits.open(fname)[0]
@@ -46,7 +46,7 @@ def load_fits(f, pol=True, **kwargs):
     freq = h['FREQ'] * units.Hz
 
     try:
-        time  = h['TIME']
+        time  = h['TIME'] * time_scaling
     except KeyError:
         time = 0
 
@@ -79,7 +79,7 @@ def load_img(f, **kwargs):
         img = load_fits(g[0], **kwargs)
 
         if float(img.meta.dict()['time']) == 0:
-            #ARR:  This part must have only applied to some specific file format.  Replacing with something else.
+            #ARR:  This part must have only applied to some old specific file format.  Replacing with something else.
             '''
             if len(f.split('/')[-1].split('_')) > 8:
                 time = float(f.split('/')[-1].split('_')[8][1:])
