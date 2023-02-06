@@ -89,11 +89,11 @@ def resolvedFractionalPolarizations(img, blurring_fwhm_muas=20.0):
     assert np.isclose(np.abs(img.fov.value[0]), np.abs(img.fov.value[1]))
     blurredStokesImages = [convolveSquareImage(img.value[:,:,stokes], np.abs(img.fov.value[0]), blurring_fwhm_muas) for stokes in range(4)]
     resolvedLinear = np.sqrt(blurredStokesImages[1]**2 + blurredStokesImages[2]**2)
-	resolvedCircular = np.abs(blurredStokesImages[3])
-	resolvedTotalIntensity = blurredStokesImages[0]
-	totalI = np.nansum(resolvedTotalIntensity)
+    resolvedCircular = np.abs(blurredStokesImages[3])
+    resolvedTotalIntensity = blurredStokesImages[0]
+    totalI = np.nansum(resolvedTotalIntensity)
 
-	return np.nansum(resolvedLinear) / totalI, np.nansum(resolvedCircular) / totalI
+    return np.nansum(resolvedLinear) / totalI, np.nansum(resolvedCircular) / totalI
 
 def computeBetaCoefficients(img, m_list=[1,2,3,4,5], r_min=0, r_max=np.inf, blurring_fwhm_muas=20.0, norm_in_int=False, norm_with_StokesI=True):
     """
