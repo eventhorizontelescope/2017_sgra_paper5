@@ -89,12 +89,13 @@ def resolvedFractionalPolarizations(img, blurring_fwhm_muas=20.0):
     assert np.isclose(np.abs(img.fov.value[0]), np.abs(img.fov.value[1]))
     blurredStokesImages = [convolveSquareImage(img.value[:,:,stokes], np.abs(img.fov.value[0]), blurring_fwhm_muas) for stokes in range(4)]
     resolvedLinear = np.sqrt(blurredStokesImages[1]**2 + blurredStokesImages[2]**2)
-    resolvedLinearFraction = resolvedLinear/blurredStokesImages[0]
-    resolvedCircularFraction = np.abs(blurredStokesImages[3])/blurredStokesImages[0]
+	resolvedCircular = np.abs(blurredStokesImages[3])
+	resolvedTotalIntensity = blurredStokesImages[0]
+	totalI = np.nansum(resolvedTotalIntensity)
 
-    return np.mean(resolvedLinearFraction[np.isfinite(resolvedLinearFraction)]), np.mean(resolvedCircularFraction[np.isfinite(resolvedCircularFraction)])
+	return np.nansum(resolvedLinear) / totalI, np.nansum(resolvedCircular) / totalI
 
-def computeBetaCoefficient(img, m=2, r_min=0, r_max=np.inf, norm_in_int=False, norm_with_StokesI=True):
+def computeBetaCoefficients(img, m_list=[1,2,3,4,5], r_min=0, r_max=np.inf, blurring_fwhm_muas=20.0, norm_in_int=False, norm_with_StokesI=True):
     """
     Compute the amplitude and phase of the complex beta coefficient of linear polarization described in Palumbo, Wong, and Prather 2020.  Code based on pmodes.py by Daniel Palumbo.
     """
@@ -108,6 +109,10 @@ def computeBetaCoefficient(img, m=2, r_min=0, r_max=np.inf, norm_in_int=False, n
     iarr = np.flip(np.transpose(img.value[:,:,0], (1,0)), axis=0)
     qarr = np.flip(np.transpose(img.value[:,:,1], (1,0)), axis=0)
     uarr = np.flip(np.transpose(img.value[:,:,2], (1,0)), axis=0)
+    if blurring_fwhm_muas > 0:
+        iarr = convolveSquareImage(iarr, fov_muas, blurring_fwhm_muas)
+        qarr = convolveSquareImage(qarr, fov_muas, blurring_fwhm_muas)
+        uarr = convolveSquareImage(uarr, fov_muas, blurring_fwhm_muas)
     assert iarr.shape[0] == iarr.shape[1]
     npix = iarr.shape[0]
 
@@ -144,25 +149,28 @@ def computeBetaCoefficient(img, m=2, r_min=0, r_max=np.inf, norm_in_int=False, n
     num_above10 = ann_iarr[ann_iarr > .1* peak].size
 
     # compute betas
-    qbasis = np.cos(-angles*m)
-    ubasis = np.sin(-angles*m)
-    pbasis = qbasis + 1.j*ubasis
-    if norm_in_int:
-        if norm_with_StokesI:
-            prod = marr * pbasis
+    output = []
+    for m in m_list:
+        qbasis = np.cos(-angles*m)
+        ubasis = np.sin(-angles*m)
+        pbasis = qbasis + 1.j*ubasis
+        if norm_in_int:
+            if norm_with_StokesI:
+                prod = marr * pbasis
+            else:
+                prod = phatarr * pbasis
+            coeff = prod[ (MUDISTS <= r_max) & (MUDISTS >= r_min) ].sum()
+            coeff /= npix
         else:
-            prod = phatarr * pbasis
-        coeff = prod[ (MUDISTS <= r_max) & (MUDISTS >= r_min) ].sum()
-        coeff /= npix
-    else:
-        prod = parr * pbasis
-        coeff = prod[ (MUDISTS<=r_max) & (MUDISTS>=r_min) ].sum()
-        if norm_with_StokesI:
-            coeff /= tf
-        else:
-            coeff /= pf
+            prod = parr * pbasis
+            coeff = prod[ (MUDISTS<=r_max) & (MUDISTS>=r_min) ].sum()
+            if norm_with_StokesI:
+                coeff /= tf
+            else:
+                coeff /= pf
+        output.append([np.abs(coeff), np.angle(coeff) * 180.0 / np.pi])
 
-    return np.abs(coeff), np.angle(coeff) * 180.0 / np.pi
+    return output
 
 def computeOpticalDepth(img):
     """Intensity-weighted average optical depth"""

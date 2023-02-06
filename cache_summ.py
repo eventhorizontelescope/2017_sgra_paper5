@@ -66,7 +66,7 @@ def cache_summ(src_fmt, dst_fmt,
     for values in product(*params.values()):
         criteria = {p:v for p, v in zip(params.keys(), values)}
 
-        if not (criteria['mag'] in ['MAD', 'SANE']):
+        if not (criteria['mag'] in ['MAD', 'SANE', 'M', 'S', 'mad', 'sane']):
             #This is helping me catch folders representing old runs.  Skip them.
             continue
 
@@ -101,7 +101,7 @@ def cache_summ(src_fmt, dst_fmt,
             moments = mm.moments(img.value, *img.fov.value, FWHM=FWHM)
             unresolvedPolarizationFractions = mm.unresolvedFractionalPolarizations(img)
             resolvedPolarizationFractions = mm.resolvedFractionalPolarizations(img)
-            beta2Coefficient = mm.computeBetaCoefficient(img)
+            betas = mm.computeBetaCoefficients(img, m_list=[1,2,3,4,5])
             opticalDepth = mm.computeOpticalDepth(img)
             faradayDepth = mm.computeFaradayDepth(img)
             time    = img.meta.time.value
@@ -109,15 +109,24 @@ def cache_summ(src_fmt, dst_fmt,
             tab.append([
                 p, time, time_hr,
                 Ladv, Mdot, nuLnu, Ftot, np.min(img.value), np.max(img.value),
-                *moments, *unresolvedPolarizationFractions, *resolvedPolarizationFractions, *beta2Coefficient, opticalDepth, faradayDepth])
+                *moments, *unresolvedPolarizationFractions, *resolvedPolarizationFractions, 
+                *betas[0], *betas[1], *betas[2], *betas[3], *betas[4], 
+                opticalDepth, faradayDepth])
 
         # Turn list of of list into pandas data frame
         tab = pd.DataFrame(tab, columns=[
-            'file_path', 'time', 'time_hr',
+            'file_path', 
+            'time', 'time_hr',
             'Mdot', 'Ladv', 'nuLnu', 'Ftot',
             'Imin', 'Imax', 'Imean',
             'alpha0', 'beta0', 'major_FWHM', 'minor_FWHM', 'PA', 
-            'mnet', 'vnet', 'mavg', 'vavg', 'beta_2_amplitude', 'beta_2_phase', 'tauI', 'tauF']
+            'mnet', 'vnet', 'mavg', 'vavg', 
+            'b1_amp', 'b1_phase', 
+            'b2_amp', 'b2_phase', 
+            'b3_amp', 'b3_phase', 
+            'b4_amp', 'b4_phase', 
+            'b5_amp', 'b5_phase', 
+            'tauI', 'tauF']
         )
 
         # Only touch file system if everything works

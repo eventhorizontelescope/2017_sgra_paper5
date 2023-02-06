@@ -86,7 +86,10 @@ def load_img(f, **kwargs):
             else:
                 time = float(f.split('/')[-1].split('_')[-1].split('.')[0])
             '''
-            time = float(f.split('/')[-1].split('_')[1][1:])
+            if 'Average' in f:
+                time = np.nan
+            else:
+                time = float(f.split('/')[-1].split('_')[1][1:])
             img.set_time(time)
         return img
 
