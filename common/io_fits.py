@@ -59,6 +59,9 @@ def load_fits(f, time_scaling=10, **kwargs):
 
     if len(f.data.shape) == 2:
         img = f.data / scale
+        img = np.atleast_3d(img)
+        tauI = None
+        tauF = None
     elif len(f.data.shape) == 3:
         img = np.transpose(f.data[:5,:,:], (2,1,0)) / scale
         try:

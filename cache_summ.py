@@ -66,9 +66,10 @@ def cache_summ(src_fmt, dst_fmt,
     for values in product(*params.values()):
         criteria = {p:v for p, v in zip(params.keys(), values)}
 
-        if not (criteria['mag'] in ['MAD', 'SANE', 'M', 'S', 'mad', 'sane']):
-            #This is helping me catch folders representing old runs.  Skip them.
-            continue
+        if 'mag' in criteria.keys():
+            if not (criteria['mag'] in ['MAD', 'SANE', 'M', 'S', 'mad', 'sane']):
+                #This is helping me catch folders representing old runs.  Skip them.
+                continue
 
         # Check output file
         dst = Path(dst_fmt.format(**criteria))
