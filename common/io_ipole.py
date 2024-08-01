@@ -37,7 +37,8 @@ def load_hdf5(f, pol=True, **kwargs):
         img  = f['pol'][:,:,0:4]
         tauF = f['pol'][:,:,4]
     else:
-        img = np.atleast_3d(f['unpol'][()])
+        # img = np.atleast_3d(f['unpol'][()])
+        img  = f['unpol'][()]
         tauF = None
 
     tauI = f['tau'][()]
