@@ -30,7 +30,7 @@ from common import hallmark      as hm
 from common import mockservation as mock
 
 def cache_gt(src_fmt, dst_fmt, img_fmt='ipole',
-              params=None, order=['snapshot'], **kwargs):
+              params=None, order=['snapshot'], cutoff=15e9, **kwargs):
 
     io = import_module('common.io_' + img_fmt)
 
@@ -82,7 +82,7 @@ def cache_gt(src_fmt, dst_fmt, img_fmt='ipole',
         mov = io.load_mov(tqdm(sel.path, desc=desc), pol=False)
         m   = mov.meta
         N   = max(mov.shape[-2:])
-        mov = mock.crop(mock.compress(mov, N=2*N), m.width, m.height)
+        mov = mock.crop(mock.compress(mov, N=2*N, cutoff=float(cutoff)), m.width, m.height)
 
         # Only touch file system if everything works
         dst.parent.mkdir(parents=True, exist_ok=True)
