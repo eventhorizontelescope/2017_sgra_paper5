@@ -32,8 +32,16 @@ from common import hallmark as hm
 from common import analyses as mm
 import pdb
 
-def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
-               params=None, order=['snapshot'], **kwargs):
+def cache_summ(src_fmt, dst_fmt, 
+               params=None, order=['snapshot'], FWHM=True, **kwargs):
+
+    file_ending = src_fmt.split('.')[-1]
+    if file_ending == 'fits':
+        img_fmt = 'fits'
+    elif file_ending == 'h5':
+        img_fmt = 'ipole'
+    else:
+        raise ValueError("You are asking for neither h5 nor fits files, which are not implemented.")
 
     io = import_module('common.io_' + img_fmt)
 
@@ -58,16 +66,10 @@ def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
     for values in product(*params.values()):
         criteria = {p:v for p, v in zip(params.keys(), values)}
 
-        '''
-        #BHAC files have a strange way of specifying spin: '+15o16' == 15/16.  Catch these.
-        spinString = criteria['spin']
-        try:
-            spinFloat = float(spinString)
-        except:
-            spinStringSplit = spinString.split('o')
-            spinFloat = float(spinStringSplit[0]) / float(spinStringSplit[1])
-        criteria['spin'] = str(spinFloat)
-        '''
+        if 'mag' in criteria.keys():
+            if not (criteria['mag'] in ['MAD', 'SANE', 'M', 'S', 'mad', 'sane']):
+                #This is helping me catch folders representing old runs.  Skip them.
+                continue
 
         # Check output file
         dst = Path(dst_fmt.format(**criteria))
@@ -97,26 +99,35 @@ def cache_summ(src_fmt, dst_fmt, img_fmt='ipole',
         for p in tqdm(sel.path, desc=desc):
             Mdot, Ladv, nuLnu, Ftot, img = io.load_summ(p)
 
-            moments = mm.moments(img.value, *img.fov.value, FWHM=True)
+            moments = mm.moments(img.value, *img.fov.value, FWHM=FWHM)
             unresolvedPolarizationFractions = mm.unresolvedFractionalPolarizations(img)
             resolvedPolarizationFractions = mm.resolvedFractionalPolarizations(img)
-            beta2Coefficient = mm.computeBetaCoefficient(img)
+            betas = mm.computeBetaCoefficients(img, m_list=[1,2,3,4,5])
             opticalDepth = mm.computeOpticalDepth(img)
             faradayDepth = mm.computeFaradayDepth(img)
             time    = img.meta.time.value
             time_hr = img.meta.time.to(u.hr).value
             tab.append([
-                time, time_hr,
+                p, time, time_hr,
                 Ladv, Mdot, nuLnu, Ftot, np.min(img.value), np.max(img.value),
-                *moments, *unresolvedPolarizationFractions, *resolvedPolarizationFractions, *beta2Coefficient, opticalDepth, faradayDepth])
+                *moments, *unresolvedPolarizationFractions, *resolvedPolarizationFractions, 
+                *betas[0], *betas[1], *betas[2], *betas[3], *betas[4], 
+                opticalDepth, faradayDepth])
 
         # Turn list of of list into pandas data frame
         tab = pd.DataFrame(tab, columns=[
+            'file_path', 
             'time', 'time_hr',
             'Mdot', 'Ladv', 'nuLnu', 'Ftot',
             'Imin', 'Imax', 'Imean',
             'alpha0', 'beta0', 'major_FWHM', 'minor_FWHM', 'PA', 
-            'mnet', 'vnet', 'mavg', 'vavg', 'beta_2_amplitude', 'beta_2_phase', 'tauI', 'tauF']
+            'mnet', 'vnet', 'mavg', 'vavg', 
+            'b1_amp', 'b1_phase', 
+            'b2_amp', 'b2_phase', 
+            'b3_amp', 'b3_phase', 
+            'b4_amp', 'b4_phase', 
+            'b5_amp', 'b5_phase', 
+            'tauI', 'tauF']
         )
 
         # Only touch file system if everything works

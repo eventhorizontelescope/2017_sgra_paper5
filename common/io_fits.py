@@ -25,7 +25,7 @@ import pdb
 from . import scale as s
 from . import dalt  as d
 
-def load_fits(f, pol=True, **kwargs):
+def load_fits(f, time_scaling=10, **kwargs):
     """Load the contents of a fits file just like an ipole image.
     Requires just the astropy.io.fits.hdu.image.PrimaryHDU object,
     i.e. fits.open(fname)[0]
@@ -46,32 +46,34 @@ def load_fits(f, pol=True, **kwargs):
     freq = h['FREQ'] * units.Hz
 
     try:
-        time  = h['TIME']
+        time  = h['TIME'] * time_scaling
     except KeyError:
         time = 0
 
     nx = h['NAXIS1']
     ny = h['NAXIS2']
-    # FOV/px ~ CDELT appears to be in degrees
     fov_to_d = dsource / L_unit / 2.06265e11 # latter is muas_per_rad
     width = abs(nx*h['CDELT1']*3600*1e6*fov_to_d)
     height = abs(ny*h['CDELT2']*3600*1e6*fov_to_d)
-
     scale = (width * L_unit / nx) * (height * L_unit / ny) / (dsource * dsource) / 1e-23
 
     if len(f.data.shape) == 2:
-        img  =  f.data.T / scale
+        img = f.data / scale
+        img = np.atleast_3d(img)
+        tauI = None
+        tauF = None
     elif len(f.data.shape) == 3:
-        img = np.transpose(f.data, (2,1,0)) / scale
-    tauI = None
-    tauF = None
-
-    #print("L_unit: {}".format(L_unit))
-    #print("FOV in deg: {} {} M: {} x {}".format(nx*h['CDELT1'], ny*h['CDELT2'], width, height))
-    #print("Scale: {}".format(scale))
-    #print("Total flux in image: {} header: {}".format(np.sum(img*scale), h['STOT']))
-
-    return d.Image(img, MBH, dist, freq, time, width, height, tauI, tauF, **kwargs)
+        img = np.transpose(f.data[:5,:,:], (2,1,0)) / scale
+        try:
+            tauI = f.data[4,:,:].T / scale
+        except IndexError:
+            tauI = None
+        try:
+            tauF = f.data[5,:,:].T / scale
+        except IndexError:
+            tauF = None
+        
+    return d.Image(img, MBH, dist, freq, time, width, height, tauI, tauF, scale, **kwargs)
 
 def load_img(f, **kwargs):
     if isinstance(f, list):
@@ -80,27 +82,30 @@ def load_img(f, **kwargs):
         img = load_fits(g[0], **kwargs)
 
         if float(img.meta.dict()['time']) == 0:
-            #ARR:  This part must have only applied to some specific file format.  Replacing with something else.
+            #ARR:  This part must have only applied to some old specific file format.  Replacing with something else.
             '''
             if len(f.split('/')[-1].split('_')) > 8:
                 time = float(f.split('/')[-1].split('_')[8][1:])
             else:
                 time = float(f.split('/')[-1].split('_')[-1].split('.')[0])
             '''
-            time = float(f.split('/')[-1].split('_')[1][1:])
+            if 'Average' in f:
+                time = np.nan
+            else:
+                time = float(f.split('/')[-1].split('_')[1][1:])
             img.set_time(time)
         return img
 
 def load_summ(f, **kwargs):
 
-	"""Most info will be missing.  Returning nan for those."""
-	
-	img = load_img(f, **kwargs)
-	Ftot = np.nansum(img[:,:,0])
-	Mdot = np.nan
-	Ladv = np.nan
-	nuLnu = np.nan
-	return Mdot, Ladv, nuLnu, Ftot, img
+    """Most info will be missing.  Returning nan for those."""
+    
+    img = load_img(f, **kwargs)
+    Ftot = np.nansum(img[:,:,0]).value * img.scale
+    Mdot = np.nan
+    Ladv = np.nan
+    nuLnu = np.nan
+    return Mdot, Ladv, nuLnu, Ftot, img
 
 def load_mov(fs, **kwargs):
     if isinstance(fs, str):
