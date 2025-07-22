@@ -83,3 +83,11 @@ To make it a smooth experience, we define three data stage.
 * `igrmonty` Condor Workflow: https://github.com/bhpire/igrmonty-osg
 
 * `calsz` Condor Workflow: https://github.com/bhpire/calsz-osg
+
+## Usage
+
+ * First, ensure that the files you are analyzing are in the model folder.  This is likely efficiently accomplished via symlink.
+
+ * Next, you need to make a .yaml file for the library you are analyzing.  These are meant to flexibly handle a variety of file formats and naming schemes.  Pattern matching one of the existing files is recommended.  You are specifying the source file name format, output file name format, image format, and then the order in which you would like the rows in the tables to be output.
+
+ * After that, typically do "python cache_summ.py {path to your IPOLE yaml file}" for tables of image observables, or "python cache_sed.py {path to your GRMONTY yaml file}" to do the same for SEDs.  Your output will be formatted however you specified in the .yaml files.
